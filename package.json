@@ -1,0 +1,64 @@
+{
+  "name": "@obaronai/astro-ai-readiness",
+  "version": "0.0.0",
+  "description": "AI Readiness toolkit for Astro — generates llms.txt, agents.md, .well-known/mcp.json, named-bot rules in robots.txt, and ships JSON-LD helper components.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "echo 'TODO: configure tsup or Astro toolchain'",
+    "test": "echo 'TODO: configure vitest'",
+    "lint": "echo 'TODO: configure eslint + prettier'"
+  },
+  "keywords": [
+    "ai-readiness",
+    "llms-txt",
+    "llms-full-txt",
+    "agents-md",
+    "mcp",
+    "robots-txt",
+    "schema-org",
+    "json-ld",
+    "astro-integration",
+    "astro-component",
+    "withastro"
+  ],
+  "author": {
+    "name": "Adam Kinney",
+    "email": "hi@obaron.ai",
+    "url": "https://adamkinney.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/obaronai/astro-ai-readiness.git"
+  },
+  "homepage": "https://github.com/obaronai/astro-ai-readiness#readme",
+  "bugs": {
+    "url": "https://github.com/obaronai/astro-ai-readiness/issues"
+  },
+  "peerDependencies": {
+    "astro": "^5.0.0 || ^6.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
