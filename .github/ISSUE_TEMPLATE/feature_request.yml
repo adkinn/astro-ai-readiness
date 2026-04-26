@@ -1,6 +1,6 @@
 name: Feature request
 description: Propose a feature or enhancement
-labels: ["type: feature", "status: needs-triage"]
+labels: ["type: feature", "priority: medium", "status: needs-triage"]
 body:
   - type: markdown
     attributes:

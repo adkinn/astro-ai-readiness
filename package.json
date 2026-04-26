@@ -23,8 +23,8 @@
   "scripts": {
     "build": "tsup && cp src/components/*.astro dist/components/",
     "typecheck": "tsc --noEmit",
-    "test": "echo 'TODO: configure vitest'",
-    "lint": "echo 'TODO: configure eslint + prettier'"
+    "test": "echo 'tests not configured yet — stub-failing per repo-management.md hygiene' && exit 1",
+    "lint": "echo 'lint not configured yet — stub-failing per repo-management.md hygiene' && exit 1"
   },
   "dependencies": {
     "zod": "^3.23.0"

@@ -18,10 +18,8 @@
 
 <!-- closes #N / refs #N — fill in or remove. -->
 
-## Checklist
+<!--
+PR title note: use Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`)
+— it becomes the squashed commit message.
+-->
 
-- [ ] Code builds cleanly (`npm run build`)
-- [ ] Lint + typecheck + tests pass (`npm run lint && npm run typecheck && npm test`)
-- [ ] CHANGELOG.md `[Unreleased]` section updated (Added / Changed / Deprecated / Removed / Fixed / Security)
-- [ ] README updated if this changes user-facing behavior or scope
-- [ ] PR title follows [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `chore:`, etc.) — becomes the squashed commit message

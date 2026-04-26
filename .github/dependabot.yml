@@ -1,3 +1,6 @@
+# Limits chosen to absorb a weekly grouped patch PR plus headroom for
+# individual minor / major bumps that grouping doesn't catch. Single
+# maintainer — bias toward fewer concurrent PRs to triage.
 version: 2
 updates:
   - package-ecosystem: "npm"
@@ -7,10 +10,10 @@ updates:
     groups:
       patch-updates:
         update-types: ["patch"]
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 5  # 1 grouped patch + ~4 individual minor/major
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 3  # GHA repos churn less; tighter cap is fine

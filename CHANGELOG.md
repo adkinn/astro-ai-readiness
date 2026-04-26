@@ -10,6 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - README and CONTRIBUTING rewritten to reflect v0.0.1 shipped reality (per Plan 05b). Drift removed: roadmap section now lists what's coming by version; "What ships" section lists only `<OrganizationSchema>`. Will reach the npm registry with the next version publish.
 - Repo foundation aligned with the open-source repo management playbook (`obaron/brand/gh-org/repo-management.md`): added `CHANGELOG.md`, `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1), `SECURITY.md`, `.github/CODEOWNERS`, `.github/dependabot.yml`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/ci.yml`, `.github/workflows/release.yml`. Issue templates converted from Markdown to YAML forms with required-field enforcement. `CONTRIBUTING.md` relocated to `.github/CONTRIBUTING.md` per playbook convention.
+- `npm test` and `npm run lint` stub-fail (`exit 1`) until vitest + eslint land. Honest CI: contributors and Dependabot see a red rope-line for missing coverage rather than a green-painted no-op. When real configs land, swap the echo-fails for the real commands and re-add lint/test to `release.yml` (currently typecheck + build only).
+- `release.yml` hardened: tag-vs-`package.json`-version guard before publish (prevents "cannot publish over previously published version" if a tag and the manifest drift), explicit dist-artifact non-empty checks, and a comment on the hardcoded `node-version: 22` so the next LTS-policy sweep doesn't miss it.
+- `SECURITY.md` "Supported versions" section reworded — pre-1.0 the policy is "most recently published version" (no backports); the most-recent-minor policy activates at 1.0.
+- Issue forms now apply `priority: medium` as the triage default (per playbook line 271 — "default medium until evaluated") alongside the existing `type:` and `status: needs-triage` labels.
+- `CONTRIBUTING.md` adds the open-vs-closed boundary link to the org Profile README and a one-paragraph voice steer (institutional, specific, no AI-hype) so contributors can mirror the README/Profile-README tone in PRs and issue comments.
+- `dependabot.yml` annotated with rationale on the open-PR limits.
+- Pull-request template trimmed back to the playbook's spec (What changed / Why / Testing / Breaking / Linked issues + Conventional Commits hint). Earlier checklist removed for fidelity to the seed-instance spec; if we want the checklist as standard across all Obaron repos, update the playbook's PR-template description and re-add.
 
 ### Removed
 

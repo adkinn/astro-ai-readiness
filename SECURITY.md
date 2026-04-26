@@ -10,7 +10,7 @@ Do not report vulnerabilities through public issues, social, or email.
 
 ## Supported versions
 
-We support the most recent minor release. Security fixes ship to that release; older releases get security advisories but may not get patches.
+During the 0.x phase, we support the most recently published version only — security fixes ship as a new patch, not as backports. Once 1.0 ships, the policy becomes most-recent-minor (security fixes backported within the active minor line; older minors get advisories but may not get patches).
 
 ## Scope
 

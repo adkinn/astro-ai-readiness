@@ -17,13 +17,40 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
+          # active LTS at publish time — bump when the policy in
+          # obaron/brand/gh-org/repo-management.md updates
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
 
       - run: npm ci
 
+      - name: Verify tag matches package.json version
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $PKG_VERSION"
+            exit 1
+          fi
+
+      # Note: lint + test are stub-failing in package.json until vitest +
+      # eslint land. Once real, re-add them here so a tag-on-broken-commit
+      # can't ship to npm. Until then, typecheck + build are the rope-line.
+      - run: npm run typecheck
+
       - run: npm run build
+
+      - name: Verify dist is non-empty
+        run: |
+          for f in dist/index.js dist/index.d.ts \
+                   dist/components/index.js dist/components/index.d.ts \
+                   dist/components/OrganizationSchema.astro; do
+            if [ ! -s "$f" ]; then
+              echo "::error::expected build artifact missing or empty: $f"
+              exit 1
+            fi
+          done
 
       - run: npm publish --provenance --access public
         env:

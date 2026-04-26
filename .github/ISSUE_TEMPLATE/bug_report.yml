@@ -1,6 +1,6 @@
 name: Bug report
 description: Report a bug in @obaronai/astro-ai-readiness
-labels: ["type: bug", "status: needs-triage"]
+labels: ["type: bug", "priority: medium", "status: needs-triage"]
 body:
   - type: markdown
     attributes:
