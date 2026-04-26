@@ -18,6 +18,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `dependabot.yml` annotated with rationale on the open-PR limits.
 - Pull-request template trimmed back to the playbook's spec (What changed / Why / Testing / Breaking / Linked issues + Conventional Commits hint). Earlier checklist removed for fidelity to the seed-instance spec; if we want the checklist as standard across all Obaron repos, update the playbook's PR-template description and re-add.
 
+### Added
+
+- `docs/maintainer-setup.md` — durable record of the GitHub-UI / npm-web tasks needed to complete Foundation, including the **branch-protection sub-decision** the stub-fail decision exposed (require-status-checks would block every Dependabot PR until lint/test are real). Recommends Option 1 — flip status-check requirement on in the same commit that makes lint/test real. Also documents the trigger list for when `src/components/` adds a new component (`release.yml` dist verification needs appending) and the swap-when-real path for stub-failed scripts.
+- `release.yml` dist verification block carries an inline reminder that the artifact list is hardcoded and needs appending when new components ship.
+
 ### Removed
 
 - `.github/ISSUE_TEMPLATE/bug_report.md` and `feature_request.md` (replaced by YAML form variants).

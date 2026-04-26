@@ -41,6 +41,10 @@ jobs:
 
       - run: npm run build
 
+      # NB: hardcoded artifact list. When src/components/ adds a new
+      # component (or src/ adds a new dist entry), append the new
+      # expected file paths here — otherwise the new artifact ships
+      # unverified. Tracked as a trigger in CHANGELOG / docs/maintainer-setup.md.
       - name: Verify dist is non-empty
         run: |
           for f in dist/index.js dist/index.d.ts \
