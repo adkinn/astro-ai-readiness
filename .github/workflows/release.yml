@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           # active LTS at publish time — bump when the policy in
           # obaron/brand/gh-org/repo-management.md updates
