@@ -1,0 +1,33 @@
+---
+import { config } from 'virtual:obaronai-config'
+
+const org = config.organization
+
+type SchemaJson = Record<string, unknown>
+
+const jsonLd: SchemaJson = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: org.name,
+}
+
+if (org.url) jsonLd.url = org.url
+if (org.logo) jsonLd.logo = org.logo
+if (org.foundingDate) jsonLd.foundingDate = org.foundingDate
+if (org.knowsAbout && org.knowsAbout.length > 0) jsonLd.knowsAbout = org.knowsAbout
+if (org.areaServed) jsonLd.areaServed = org.areaServed
+
+if (org.founder) {
+  const founder: SchemaJson = {
+    '@type': 'Person',
+    name: org.founder.name,
+  }
+  if (org.founder.jobTitle) founder.jobTitle = org.founder.jobTitle
+  if (org.founder.description) founder.description = org.founder.description
+  if (org.founder.sameAs && org.founder.sameAs.length > 0) founder.sameAs = org.founder.sameAs
+  jsonLd.founder = founder
+}
+
+const jsonLdString = JSON.stringify(jsonLd).replace(/</g, '\\u003c')
+---
+<script type="application/ld+json" is:inline set:html={jsonLdString}></script>
