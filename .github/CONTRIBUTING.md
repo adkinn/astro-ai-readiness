@@ -4,13 +4,13 @@ Thanks for your interest in contributing to `@obaronai/astro-ai-readiness`.
 
 ## Status
 
-This package is shipping incrementally toward v0.1.0 (see [README](./README.md) for the roadmap). Current state: v0.0.1 with `<OrganizationSchema>`. The public API surface grows in small, validated slices. PRs welcome — especially bug reports against shipped surface, missing-config-knob requests, and reference-implementation feedback.
+This package is shipping incrementally toward v0.1.0 (see [README](../README.md) for the roadmap). Current state: v0.0.1 with `<OrganizationSchema>`. The public API surface grows in small, validated slices. PRs welcome — especially bug reports against shipped surface, missing-config-knob requests, and reference-implementation feedback.
 
 ## How to contribute
 
 ### Reporting a bug
 
-[Open an issue](https://github.com/obaronai/astro-ai-readiness/issues/new?template=bug_report.md) using the bug report template. Please include:
+[Open an issue](https://github.com/obaronai/astro-ai-readiness/issues/new?template=bug_report.yml) using the bug report template. Please include:
 
 - Astro version
 - Toolkit version
@@ -18,7 +18,7 @@ This package is shipping incrementally toward v0.1.0 (see [README](./README.md) 
 
 ### Requesting a feature
 
-[Open an issue](https://github.com/obaronai/astro-ai-readiness/issues/new?template=feature_request.md) using the feature request template. The toolkit's scope is "AI Readiness for Astro sites" — features that fit the rubric (`obaron.ai/methodology`) are most likely to land. Adjacent niceties (Lighthouse tuning, OG image generation, sitemap depth) are out of scope.
+[Open an issue](https://github.com/obaronai/astro-ai-readiness/issues/new?template=feature_request.yml) using the feature request template. The toolkit's scope is "AI Readiness for Astro sites" — features that fit the rubric (`obaron.ai/methodology`) are most likely to land. Adjacent niceties (Lighthouse tuning, OG image generation, sitemap depth) are out of scope.
 
 ### Submitting a PR
 
@@ -36,7 +36,7 @@ This package is shipping incrementally toward v0.1.0 (see [README](./README.md) 
 - Modular outputs (one module per artifact in `src/outputs/`).
 - Content-collection introspection (`getCollection()`) — not post-build HTML scrape.
 
-See the toolkit's design principles in the [README](./README.md#design-principles).
+See the toolkit's design principles in the [README](../README.md#design-principles).
 
 ## Scope statement
 
@@ -44,4 +44,4 @@ The toolkit's job is to make Astro sites score well against [Obaron's AI Readine
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the project's [MIT license](./LICENSE).
+By contributing, you agree that your contributions will be licensed under the project's [MIT license](../LICENSE). Please also follow our [Code of Conduct](../CODE_OF_CONDUCT.md).

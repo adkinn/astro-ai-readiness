@@ -85,7 +85,7 @@ The v0.1 line is content → artifacts: components and files. Build-time AI-read
 
 ## Contributing
 
-PRs welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md).
+PRs welcome. See [CONTRIBUTING.md](./.github/CONTRIBUTING.md) and our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## License
 

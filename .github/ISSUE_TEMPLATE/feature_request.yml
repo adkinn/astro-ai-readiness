@@ -1,0 +1,64 @@
+name: Feature request
+description: Propose a feature or enhancement
+labels: ["type: feature", "status: needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion. Before filing, check the [README roadmap](../../blob/main/README.md#on-the-roadmap-toward-v010) — your idea may already be coming. The toolkit's scope is "AI Readiness for Astro sites" anchored to [Obaron's rubric](https://obaron.ai/methodology); features outside that scope will be politely closed.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What problem or workflow does this feature unblock? Be specific — "I want to do X but the toolkit doesn't let me" is more useful than "it would be cool if…".
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed solution
+      description: What would the API / output look like? Sketch a concrete `astro.config.mjs` excerpt or component usage.
+      render: markdown
+      placeholder: |
+        ```ts
+        // astro.config.mjs
+        aiReadiness({
+          // proposed config shape
+        })
+        ```
+
+        ```astro
+        ---
+        // proposed component usage
+        ---
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Have you tried existing approaches? Other Astro integrations? Custom build scripts? What didn't work, and why?
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope-check
+    attributes:
+      label: Open-vs-closed boundary check
+      description: |
+        Per the [Obaron OSS scope](https://github.com/obaronai/.github/blob/main/profile/README.md), the toolkit ships open-source helpers; the scoring engine and managed services are closed-source product. Does this feature fit the open-source side?
+        Which rubric category at [obaron.ai/methodology](https://obaron.ai/methodology) does it map to?
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Links, related issues, prior art in the Astro ecosystem.
+    validations:
+      required: false

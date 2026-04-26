@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or design discussion
+    url: https://github.com/obaronai/astro-ai-readiness/discussions
+    about: Open a thread in Discussions for "how do I…", design conversations, or general questions. The Issues tab is for actionable bugs and feature requests.
+  - name: Security vulnerability
+    url: https://github.com/obaronai/astro-ai-readiness/security/advisories/new
+    about: Please report security issues privately via GitHub's Security Advisories — do not open a public issue.
+  - name: Obaron methodology / rubric questions
+    url: https://obaron.ai/methodology
+    about: Questions about the AI Readiness rubric itself (not the toolkit's implementation of it) — the methodology lives on obaron.ai.

@@ -1,0 +1,3 @@
+# Single-maintainer phase: every file owned by the lead maintainer.
+# When a second maintainer joins, split per-folder ownership here.
+* @adkinn
