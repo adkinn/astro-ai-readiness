@@ -4,7 +4,7 @@ Thanks for your interest in contributing to `@obaronai/astro-ai-readiness`.
 
 ## Status
 
-This package is in pre-publish v0.1 development. The public API surface is small and intentionally narrow (see the README for what ships in v0.1, and what's deferred to v0.2). PRs welcome — especially bug reports, missing-config-knob requests, and reference-implementation feedback.
+This package is shipping incrementally toward v0.1.0 (see [README](./README.md) for the roadmap). Current state: v0.0.1 with `<OrganizationSchema>`. The public API surface grows in small, validated slices. PRs welcome — especially bug reports against shipped surface, missing-config-knob requests, and reference-implementation feedback.
 
 ## How to contribute
 

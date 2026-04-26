@@ -1,22 +1,26 @@
 # @obaronai/astro-ai-readiness
 
-> AI Readiness toolkit for Astro — generates `llms.txt`, `agents.md`, `.well-known/mcp.json`, named-bot rules in `robots.txt`, and ships JSON-LD helper components.
+> AI Readiness toolkit for Astro — JSON-LD helper components today, agent-discoverable file outputs (`llms.txt`, `agents.md`, `.well-known/mcp.json`, named-bot `robots.txt` rules) on the v0.1 roadmap.
 
-**Status:** v0.1 in development. Pre-publish.
+**Status:** v0.0.1 — first slice shipped. `<OrganizationSchema>` is live; more components and file outputs incoming on the v0.1 roadmap.
 
-## What it does
+## What ships in v0.0.1
 
-One `aiReadiness({...})` block in `astro.config.mjs` plus your content collections produces the AI-readiness artifacts at build time:
+- `<OrganizationSchema />` — inline JSON-LD Organization block, all data driven from your `aiReadiness({...})` config.
 
-- `dist/llms.txt`
-- `dist/llms-full.txt` (size-asserted from a content collection)
-- `dist/agents.md`
-- `dist/.well-known/mcp.json`
-- `dist/robots.txt` (composed with existing rules — never clobbers)
+That's it for the first slice. The toolkit ships incrementally — see the roadmap below.
 
-Plus six importable Astro components for site-wide JSON-LD:
+## On the roadmap (toward v0.1.0)
 
-`<OrganizationSchema>` `<WebSiteSchema>` `<FAQPageSchema>` `<BreadcrumbSchema>` `<TechArticleSchema>` `<CollectionSchema>`
+- v0.0.2 — `<WebSiteSchema>` + `<CollectionSchema>` (config-driven and props-driven respectively)
+- v0.0.3 — `<FAQPageSchema>` + `<BreadcrumbSchema>` + `<TechArticleSchema>`
+- v0.0.4 — first file output: `dist/llms.txt`
+- v0.0.5 — `dist/agents.md` + `dist/.well-known/mcp.json`
+- v0.0.6 — `dist/llms-full.txt` (content-collection-driven)
+- v0.0.7 — `dist/robots.txt` composition
+- v0.1.0 — polish, tests, docs
+
+Track progress: <https://github.com/obaronai/astro-ai-readiness/milestones>
 
 ## Install
 
@@ -25,6 +29,8 @@ npm install @obaronai/astro-ai-readiness
 ```
 
 ## Quick start
+
+Configure (v0.0.1 accepts `site` + `organization` only — the Zod schema rejects unknown keys):
 
 ```ts
 // astro.config.mjs
@@ -37,42 +43,45 @@ export default defineConfig({
       site: 'https://your-site.com',
       organization: {
         name: 'Your Brand',
-        founder: { name: 'You', sameAs: ['https://...'] },
+        url: 'https://your-site.com',
+        logo: 'https://your-site.com/logo.png',
+        founder: {
+          name: 'Your Name',
+          jobTitle: 'Founder',
+          sameAs: ['https://your-site.com', 'https://x.com/handle'],
+        },
       },
-      llmsTxt: { summary: 'What you do, in one sentence.' },
-      llmsFull: { collection: 'articles', sizeLimit: 200_000 },
-      agentsMd: { description: '...', contact: 'hi@your-site.com' },
-      mcp: { servers: [/* optional */] },
-      robotsTxt: { bonusBots: [/* optional extra named bots */] },
     }),
   ],
 })
 ```
 
+Use the component:
+
 ```astro
 ---
-// src/layouts/Base.astro
-import { OrganizationSchema, WebSiteSchema } from '@obaronai/astro-ai-readiness/components'
+// src/pages/index.astro
+import { OrganizationSchema } from '@obaronai/astro-ai-readiness/components'
 ---
 <OrganizationSchema />
-<WebSiteSchema />
 ```
+
+That's it for v0.0.1. Build your site (`npm run build`); inspect `dist/index.html` — you'll see an inline `<script type="application/ld+json">` with your Organization data.
 
 ## Design principles
 
-- **Content-collection-first.** Reads `getCollection()` for content sources. Does not post-build HTML scrape.
-- **Compose, don't clobber.** `robots.txt` merges with any existing `public/robots.txt`. User intent wins.
-- **Zero client JS.** Every component emits inline `<script type="application/ld+json">` at build time.
-- **Modular outputs.** One module per artifact (`outputs/llms-txt.ts`, `outputs/agents-md.ts`, …). Clean extension points for v0.2+.
-- **Composes with `@astrojs/sitemap`.** Doesn't replace it. Warns if absent.
+- **Zero client JS.** Every component emits inline `<script type="application/ld+json">` at build time. Hydrating JSON-LD would erode the very Schema.org category it's meant to lift.
+- **Compose, don't clobber.** Future file outputs (`robots.txt` etc.) will merge with existing user files rather than overwrite. User intent wins.
+- **Composes with `@astrojs/sitemap`.** Doesn't replace it. Will warn when needed once sitemap-touching outputs land.
 
-## What's deferred to v0.2
+## What's beyond v0.1
 
-Build-time AI-readiness self-score, spec validation against [llmstxt.org](https://llmstxt.org) / MCP schema, and content lints. v0.1 is content → artifacts only.
+The v0.1 line is content → artifacts: components and files. Build-time AI-readiness self-scoring (against Obaron's published rubric), spec validation against [llmstxt.org](https://llmstxt.org), and content lints are on the v0.2 horizon — but not committed scope yet. v0.1 ships first.
 
 ## Shipped on
 
-- TBD — placeholder, filled in once reference implementations deploy.
+- [aiallthethings.com](https://aiallthethings.com) — AATT, the toolkit's first reference implementation. Home page renders `<OrganizationSchema />` from v0.0.1.
+- [obaron.ai](https://obaron.ai) — Obaron's main site. Will install in FF-3.7 once v0.1.0 publishes.
 
 ## Contributing
 
