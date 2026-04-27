@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.5] — 2026-04-27
+
+Fifth slice per `plans/09-v0.0.5-llms-txt.md`. **First file-output slice — opens the file-output sub-line.** Retires the `astro:build:done` hook + dist-write pattern; subsequent slices (Plans 10–12) use the same hook to emit `agents.md`, `mcp.json`, `llms-full.txt`, and `robots.txt`. Component sub-line (six of six) remains complete from v0.0.4.
+
+### Added
+
+- `dist/llms.txt` output — toolkit composes the [llmstxt.org](https://llmstxt.org/) format from the new `llmsTxt` config block at consumer build time via the `astro:build:done` hook. Emits H1 (`organization.name`) / blockquote (`summary`) / optional free-form markdown body / optional H2 sections with bulleted links / optional `Canonical reference: [title](url)` footer after `---` rule. POSIX trailing-newline convention. Opt-in: when `llmsTxt` is absent from the config, no file ships.
+- `llmsTxt` Zod schema replacing the prior `z.unknown().optional()`. Required: `summary` (string). Optional: `body` (free-form markdown), `sections` (array of `{ title, links: [{ title, url, description? }] }` — `links.min(1)` guards against empty sections at parse time), `deferTo` (single canonical-reference `{ title, url }`). All nested objects `.strict()`. Link URLs require `https://` (or `http://localhost` for dev) per the v0.0.3 HTTPS refine.
+- `LlmsTxtConfig` TypeScript type re-exported from the package barrel: `import type { LlmsTxtConfig } from '@obaronai/astro-ai-readiness'`.
+- `src/outputs/llms-txt.ts` — pure `composeLlmsTxt(config)` + filesystem `writeLlmsTxt(config, dir, logger)` pair. Composer is testable in isolation; writer wraps the composer with `fs.writeFile`. Establishes the per-output module shape (composer + writer) that Plans 10–12 inherit.
+- `@astrojs/sitemap` detection per D-8. At `astro:config:setup`, the integration walks `astroConfig.integrations` for `'@astrojs/sitemap'`; if absent, `logger.warn(...)` fires unconditionally with an actionable message — sitemap is an AI Readiness baseline, the warning belongs at the integration level. The reference line itself ships in `robots.txt` per the matrix routing (Plan 12), not in `llms.txt`.
+- Friendlier Zod error formatting (closes High #3 carried since v0.0.1). The integration-factory `parse()` is now wrapped in `parseConfigOrThrow(options)` — on `ZodError`, throws a single `Error` with one issue per line: `path: message`. Replaces the default JSON-shaped `[{ "code": "invalid_type", ... }]` blob. Compounds across every config field added in subsequent slices.
+- `@types/node` added as a dev dependency (required by `node:fs/promises` import in `outputs/llms-txt.ts`). Internal-only — not part of the public API surface.
+- `dist/outputs/llms-txt.{js,d.ts}` and `dist/config.{js,d.ts}` artifacts added to the published tarball. tsup entry map extended; `outputs/` and `config` are intentionally NOT exposed in `package.json.exports` — internal modules ship so internal relative imports (`../config`, `./outputs/llms-txt`) resolve at consumer build time. Same pattern as `utils/json-ld` and `components/types`.
+
+### Changed
+
+- `astro:build:done` hook now load-bearing on the integration. Co-exists with the prior `astro:config:setup` hook; gate on `config.llmsTxt` being set keeps v0.0.3 / v0.0.4 consumer behavior unchanged.
+- README + Quick Start rewritten to reflect v0.0.5 shipped reality. Status line, "What ships" section (six components + one file output), Quick Start config example showing the new `llmsTxt` block (with `body`, `sections`, `deferTo`), "Shipped on" updated to AATT carrying `aiallthethings.com/llms.txt`. Roadmap shifts: v0.0.6 = `agents.md` + `mcp.json`; v0.0.7 = `llms-full.txt`; v0.0.8 = `robots.txt`; v0.1.0 = polish.
+- `src/config.ts` carries `@internal` JSDoc tag — same convention as `utils/json-ld.ts` (added in v0.0.2 review L1) and `components/types.ts` (added in v0.0.3 review L2). Consumers `import type { ... } from '@obaronai/astro-ai-readiness'` (the barrel); deep-importing `/config` will fail with `ERR_PACKAGE_PATH_NOT_EXPORTED`.
+
 ## [0.0.4] — 2026-04-27
 
 Fourth slice per `plans/08-v0.0.4-techarticle.md`. Retires the heavy-props prop pattern. **Six of six v0.1 components now live — the component sub-line is complete.** v0.0.5 begins the file-output sub-line (`dist/llms.txt` first).
@@ -77,7 +98,8 @@ First published release. End-to-end tracer slice per `plans/05-e2e-tracer.md`.
 - TypeScript declarations for `AiReadinessConfig`, `OrganizationConfig`, `FounderConfig`.
 - Build pipeline: tsup (ESM) for `.ts` + `cp` step for `.astro` source files into `dist/components/`.
 
-[Unreleased]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.4...HEAD
+[Unreleased]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.5...HEAD
+[0.0.5]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.1...v0.0.2

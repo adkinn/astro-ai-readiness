@@ -3,9 +3,11 @@ import { defineConfig } from 'tsup'
 export default defineConfig({
   entry: {
     'index': 'src/index.ts',
+    'config': 'src/config.ts',
     'components/index': 'src/components/index.ts',
     'components/types': 'src/components/types.ts',
     'utils/json-ld': 'src/utils/json-ld.ts',
+    'outputs/llms-txt': 'src/outputs/llms-txt.ts',
   },
   format: ['esm'],
   dts: true,

@@ -1,28 +1,35 @@
 # @obaronai/astro-ai-readiness
 
-> AI Readiness toolkit for Astro — JSON-LD helper components today, agent-discoverable file outputs (`llms.txt`, `agents.md`, `.well-known/mcp.json`, named-bot `robots.txt` rules) on the v0.1 roadmap.
+> AI Readiness toolkit for Astro — six JSON-LD helper components plus `dist/llms.txt` today; `agents.md`, `mcp.json`, `llms-full.txt`, and `robots.txt` rules on the v0.1 roadmap.
 
-**Status:** v0.0.4 — fourth slice shipped. **Six of six v0.1 components are live** — the component sub-line is complete. `<OrganizationSchema>`, `<WebSiteSchema>`, `<CollectionSchema>`, `<BreadcrumbSchema>`, `<FAQPageSchema>`, `<TechArticleSchema>`. v0.0.5 begins the file-output sub-line (`dist/llms.txt` first).
+**Status:** v0.0.5 — fifth slice shipped. **Component sub-line complete (6 of 6); file-output sub-line begins.** `dist/llms.txt` is the first toolkit-emitted artifact via the `astro:build:done` hook. Four more outputs to follow on the same hook.
 
-## What ships in v0.0.4
+## What ships in v0.0.5
 
-- `<OrganizationSchema />` — inline JSON-LD Organization block. Config-driven; place in your `BaseLayout` so it ships site-wide and the `#organization` `@id` reference resolves on every page.
-- `<WebSiteSchema />` — inline JSON-LD WebSite block. Config-driven; typically placed in your `BaseLayout` alongside `<OrganizationSchema />`.
-- `<CollectionSchema name url description? />` — inline JSON-LD CollectionPage block. Props-driven; place on collection-index pages (`/articles/`, `/tags/[tag]/`, etc.).
-- `<BreadcrumbSchema items={[{ name, url }, ...]} />` — inline JSON-LD BreadcrumbList. Items-array prop; place on multi-level pages where the navigation hierarchy isn't already declared inline. Empty `items` skips emission.
-- `<FAQPageSchema items={[{ question, answer }, ...]} />` — inline JSON-LD FAQPage. Items-array prop; place on pages with FAQ data. Long-form answers escape `</script>` and U+2028 / U+2029 automatically. Empty `items` skips emission.
-- `<TechArticleSchema headline description datePublished {...optional} />` — inline JSON-LD TechArticle block. Heavy-props; place on article-detail pages. `author` defaults to a Person synthesized from `config.organization.founder` (name from `founder.name`, url from `founder.sameAs[0]`); pass an explicit `author` prop to override. Optional fields: `dateModified` (defaults to `datePublished`), `image` (string URL or full ImageObject), `articleSection`, `keywords` (string array), `proficiencyLevel`, `dependencies` (string array), `url` (defaults to canonical from `Astro.url + Astro.site`).
+**Six JSON-LD components** (component sub-line complete):
+- `<OrganizationSchema />` — Organization block. Config-driven; place in your `BaseLayout` so it ships site-wide and the `#organization` `@id` reference resolves on every page.
+- `<WebSiteSchema />` — WebSite block. Config-driven; alongside `<OrganizationSchema />` in `BaseLayout`.
+- `<CollectionSchema name url description? />` — CollectionPage block. Props-driven; place on collection-index pages (`/articles/`, `/tags/[tag]/`, etc.).
+- `<BreadcrumbSchema items={[{ name, url }, ...]} />` — BreadcrumbList. Items-array prop; place on multi-level pages where the navigation hierarchy isn't already declared inline. Empty `items` skips emission.
+- `<FAQPageSchema items={[{ question, answer }, ...]} />` — FAQPage. Items-array prop; place on pages with FAQ data. Long-form answers escape `</script>` and U+2028 / U+2029 automatically. Empty `items` skips emission.
+- `<TechArticleSchema headline description datePublished {...optional} />` — TechArticle block. Heavy-props; place on article-detail pages. `author` defaults to a Person synthesized from `config.organization.founder`; pass an explicit `author` prop to override.
+
+**One file output** (file-output sub-line begins):
+- `dist/llms.txt` — `astro:build:done` hook composes the [llmstxt.org](https://llmstxt.org/) format from the `llmsTxt` config block (`summary`, optional `body`, optional `sections`, optional `deferTo`). Config-driven; opt-in (no `llmsTxt` config = no file shipped). Spec-shape: H1 / blockquote summary / free-form markdown body / H2 sections with bulleted links / canonical-reference footer.
+
+**`@astrojs/sitemap` detection per D-8.** When you call `aiReadiness({...})` and `@astrojs/sitemap` isn't in your integrations list, the toolkit logs a build-time warning. Sitemap is an AI-Readiness baseline; the sitemap reference itself ships in `robots.txt` (Plan 12 / v0.0.8).
 
 All six components emit canonical Schema.org JSON-LD with cross-component `@id` references (`#organization`, `#website`) so search and AI consumers can resolve the entity graph without redeclaring shared fields.
 
-URL config fields (`site`, `organization.url`, `organization.logo`, `founder.sameAs`) require `https://` (or `http://localhost` for dev) since v0.0.3.
+URL config fields (`site`, `organization.url`, `organization.logo`, `founder.sameAs`, `llmsTxt.*.url`) require `https://` (or `http://localhost` for dev).
+
+Config validation errors are formatted with one issue per line — `path: message` per Zod issue — instead of the default `ZodError` JSON blob.
 
 ## On the roadmap (toward v0.1.0)
 
-- v0.0.5 — first file output: `dist/llms.txt`
-- v0.0.6 — `dist/agents.md` + `dist/.well-known/mcp.json`
+- v0.0.6 — `dist/agents.md` + `dist/.well-known/mcp.json` (multi-output orchestration on the same hook)
 - v0.0.7 — `dist/llms-full.txt` (content-collection-driven)
-- v0.0.8 — `dist/robots.txt` composition
+- v0.0.8 — `dist/robots.txt` composition (compose-with-existing pattern; sitemap reference lands here)
 - v0.1.0 — polish, tests, docs
 
 Track progress: <https://github.com/obaronai/astro-ai-readiness/milestones>
@@ -35,15 +42,18 @@ npm install @obaronai/astro-ai-readiness
 
 ## Quick start
 
-Configure (v0.0.4 accepts `site`, `organization`, and an optional `webSite` block — the Zod schema rejects unknown keys, and URL fields must use `https://` or `http://localhost`):
+Configure (v0.0.5 accepts `site`, `organization`, optional `webSite`, and optional `llmsTxt` blocks — the Zod schema rejects unknown keys, and URL fields must use `https://` or `http://localhost`):
 
 ```ts
 // astro.config.mjs
 import { defineConfig } from 'astro/config'
+import sitemap from '@astrojs/sitemap'
 import aiReadiness from '@obaronai/astro-ai-readiness'
 
 export default defineConfig({
+  site: 'https://your-site.com',
   integrations: [
+    sitemap(),                              // recommended — AI Readiness baseline (D-8)
     aiReadiness({
       site: 'https://your-site.com',
       organization: {
@@ -59,6 +69,27 @@ export default defineConfig({
       webSite: {
         // Optional. `name` defaults to organization.name when absent.
         description: 'What your site does, in one sentence.',
+      },
+      llmsTxt: {
+        // Optional. When set, the toolkit ships dist/llms.txt at build time.
+        summary: 'What your site does, in one sentence — for AI agents discovering your content.',
+        body:
+          '## What lives here\n\n' +
+          'A free-form markdown paragraph or two between summary and sections.',
+        sections: [
+          {
+            title: 'Articles',
+            links: [
+              { title: 'All Articles', url: 'https://your-site.com/articles/' },
+              { title: 'RSS Feed', url: 'https://your-site.com/rss.xml' },
+            ],
+          },
+        ],
+        deferTo: {
+          // Single canonical-reference link, rendered as a footer.
+          title: 'Articles Index',
+          url: 'https://your-site.com/articles/',
+        },
       },
     }),
   ],
@@ -166,7 +197,7 @@ The v0.1 line is content → artifacts: components and files. Build-time AI-read
 
 ## Shipped on
 
-- [aiallthethings.com](https://aiallthethings.com) — AATT, the toolkit's first reference implementation. Runs all six components on production: Organization + WebSite (site-wide via BaseLayout), CollectionPage (articles + framework + tag indexes), BreadcrumbList (`/about`), FAQPage (articles with FAQ frontmatter), TechArticle (every article-detail page).
+- [aiallthethings.com](https://aiallthethings.com) — AATT, the toolkit's first reference implementation. Runs all six components on production plus toolkit-emitted `dist/llms.txt` at <https://aiallthethings.com/llms.txt>. Components: Organization + WebSite (site-wide via BaseLayout), CollectionPage (articles + framework + tag indexes), BreadcrumbList (`/about`), FAQPage (articles with FAQ frontmatter), TechArticle (every article-detail page).
 - [obaron.ai](https://obaron.ai) — Obaron's main site. Will install in FF-3.7 once v0.1.0 publishes.
 
 ## Contributing
