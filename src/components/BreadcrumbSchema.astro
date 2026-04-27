@@ -1,0 +1,22 @@
+---
+import { jsonLd } from '../utils/json-ld'
+import type { BreadcrumbItem } from './types'
+
+interface Props {
+  items: BreadcrumbItem[]
+}
+
+const { items } = Astro.props
+
+const bl = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.name,
+    item: item.url,
+  })),
+}
+---
+{items.length > 0 && <script is:inline type="application/ld+json" set:html={jsonLd(bl)}></script>}

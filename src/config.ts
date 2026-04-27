@@ -1,16 +1,25 @@
 import { z } from 'zod'
 
+/**
+ * URL string that requires `https://` (or `http://localhost` for dev).
+ * Per v0.0.2 review Medium #5: tighter than plain `z.string().url()`.
+ */
+const httpsUrl = z.string().url().refine(
+  (u) => u.startsWith('https://') || u.startsWith('http://localhost'),
+  { message: 'URL must use https:// (or http://localhost for dev)' }
+)
+
 const founderSchema = z.object({
   name: z.string().min(1),
   jobTitle: z.string().optional(),
   description: z.string().optional(),
-  sameAs: z.array(z.string().url()).optional(),
+  sameAs: z.array(httpsUrl).optional(),
 })
 
 const organizationSchema = z.object({
   name: z.string().min(1),
-  url: z.string().url().optional(),
-  logo: z.string().url().optional(),
+  url: httpsUrl.optional(),
+  logo: httpsUrl.optional(),
   founder: founderSchema.optional(),
   foundingDate: z.string().optional(),
   knowsAbout: z.array(z.string()).optional(),
@@ -23,7 +32,7 @@ const webSiteSchema = z.object({
 }).strict()
 
 export const aiReadinessConfigSchema = z.object({
-  site: z.string().url(),
+  site: httpsUrl,
   organization: organizationSchema,
   webSite: webSiteSchema.optional(),
   llmsTxt: z.unknown().optional(),

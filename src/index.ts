@@ -18,7 +18,7 @@ export default function aiReadiness(options: AiReadinessConfig): AstroIntegratio
           vite: {
             plugins: [
               {
-                name: '@obaronai/astro-ai-readiness:virtual-config',
+                name: 'obaronai-virtual-config',
                 resolveId(id: string) {
                   if (id === VIRTUAL_ID) return RESOLVED_VIRTUAL_ID
                   return null

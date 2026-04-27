@@ -1,0 +1,24 @@
+---
+import { jsonLd } from '../utils/json-ld'
+import type { FAQItem } from './types'
+
+interface Props {
+  items: FAQItem[]
+}
+
+const { items } = Astro.props
+
+const fp = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+}
+---
+{items.length > 0 && <script is:inline type="application/ld+json" set:html={jsonLd(fp)}></script>}
