@@ -70,20 +70,15 @@ Use the components:
 ```astro
 ---
 // src/layouts/BaseLayout.astro — site-wide
-import { WebSiteSchema } from '@obaronai/astro-ai-readiness/components'
+import { OrganizationSchema, WebSiteSchema } from '@obaronai/astro-ai-readiness/components'
 ---
 <head>
+  <OrganizationSchema />
   <WebSiteSchema />
 </head>
 ```
 
-```astro
----
-// src/pages/index.astro — home page only
-import { OrganizationSchema } from '@obaronai/astro-ai-readiness/components'
----
-<OrganizationSchema />
-```
+`<OrganizationSchema />` declares `@id: '<site>#organization'`; `<WebSiteSchema />` references it. Order matters in the head — Organization first.
 
 ```astro
 ---
@@ -104,8 +99,8 @@ import { BreadcrumbSchema } from '@obaronai/astro-ai-readiness/components'
 import type { BreadcrumbItem } from '@obaronai/astro-ai-readiness/components'
 
 const crumbs: BreadcrumbItem[] = [
-  { name: 'Home', url: 'https://your-site.com/' },
-  { name: 'Articles', url: 'https://your-site.com/articles/' },
+  { name: 'Home', url: new URL('/', Astro.site).toString() },
+  { name: 'Articles', url: new URL('/articles/', Astro.site).toString() },
   { name: 'How agents handle errors', url: Astro.url.toString() },
 ]
 ---
