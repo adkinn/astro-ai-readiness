@@ -35,7 +35,7 @@ npm install @obaronai/astro-ai-readiness
 
 ## Quick start
 
-Configure (v0.0.2 accepts `site`, `organization`, and an optional `webSite` block — the Zod schema rejects unknown keys):
+Configure (v0.0.3 accepts `site`, `organization`, and an optional `webSite` block — the Zod schema rejects unknown keys, and URL fields must use `https://` or `http://localhost`):
 
 ```ts
 // astro.config.mjs
@@ -92,7 +92,7 @@ import { CollectionSchema } from '@obaronai/astro-ai-readiness/components'
 ---
 <CollectionSchema
   name="All Articles"
-  url={Astro.site + 'articles/'}
+  url={new URL('articles/', Astro.site).toString()}
   description="Production-tested articles, version-pinned environments."
 />
 ```
