@@ -3,4 +3,10 @@ export { default as WebSiteSchema } from './WebSiteSchema.astro'
 export { default as CollectionSchema } from './CollectionSchema.astro'
 export { default as BreadcrumbSchema } from './BreadcrumbSchema.astro'
 export { default as FAQPageSchema } from './FAQPageSchema.astro'
-export type { BreadcrumbItem, FAQItem } from './types'
+export { default as TechArticleSchema } from './TechArticleSchema.astro'
+export type {
+  BreadcrumbItem,
+  FAQItem,
+  TechArticleAuthor,
+  TechArticleImage,
+} from './types'

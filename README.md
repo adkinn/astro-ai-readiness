@@ -2,23 +2,23 @@
 
 > AI Readiness toolkit for Astro — JSON-LD helper components today, agent-discoverable file outputs (`llms.txt`, `agents.md`, `.well-known/mcp.json`, named-bot `robots.txt` rules) on the v0.1 roadmap.
 
-**Status:** v0.0.3 — third slice shipped. Five of six components are live: `<OrganizationSchema>`, `<WebSiteSchema>`, `<CollectionSchema>`, `<BreadcrumbSchema>`, `<FAQPageSchema>`. `<TechArticleSchema>` is the next slice; file outputs follow.
+**Status:** v0.0.4 — fourth slice shipped. **Six of six v0.1 components are live** — the component sub-line is complete. `<OrganizationSchema>`, `<WebSiteSchema>`, `<CollectionSchema>`, `<BreadcrumbSchema>`, `<FAQPageSchema>`, `<TechArticleSchema>`. v0.0.5 begins the file-output sub-line (`dist/llms.txt` first).
 
-## What ships in v0.0.3
+## What ships in v0.0.4
 
-- `<OrganizationSchema />` — inline JSON-LD Organization block. Config-driven; placed once per page where it's needed (typically the home page).
-- `<WebSiteSchema />` — inline JSON-LD WebSite block. Config-driven; typically placed in your `BaseLayout` so it ships site-wide.
+- `<OrganizationSchema />` — inline JSON-LD Organization block. Config-driven; place in your `BaseLayout` so it ships site-wide and the `#organization` `@id` reference resolves on every page.
+- `<WebSiteSchema />` — inline JSON-LD WebSite block. Config-driven; typically placed in your `BaseLayout` alongside `<OrganizationSchema />`.
 - `<CollectionSchema name url description? />` — inline JSON-LD CollectionPage block. Props-driven; place on collection-index pages (`/articles/`, `/tags/[tag]/`, etc.).
 - `<BreadcrumbSchema items={[{ name, url }, ...]} />` — inline JSON-LD BreadcrumbList. Items-array prop; place on multi-level pages where the navigation hierarchy isn't already declared inline. Empty `items` skips emission.
 - `<FAQPageSchema items={[{ question, answer }, ...]} />` — inline JSON-LD FAQPage. Items-array prop; place on pages with FAQ data. Long-form answers escape `</script>` and U+2028 / U+2029 automatically. Empty `items` skips emission.
+- `<TechArticleSchema headline description datePublished {...optional} />` — inline JSON-LD TechArticle block. Heavy-props; place on article-detail pages. `author` defaults to a Person synthesized from `config.organization.founder` (name from `founder.name`, url from `founder.sameAs[0]`); pass an explicit `author` prop to override. Optional fields: `dateModified` (defaults to `datePublished`), `image` (string URL or full ImageObject), `articleSection`, `keywords` (string array), `proficiencyLevel`, `dependencies` (string array), `url` (defaults to canonical from `Astro.url + Astro.site`).
 
-All five components emit canonical Schema.org JSON-LD with cross-component `@id` references (`#organization`, `#website`) so search and AI consumers can resolve the entity graph without redeclaring shared fields.
+All six components emit canonical Schema.org JSON-LD with cross-component `@id` references (`#organization`, `#website`) so search and AI consumers can resolve the entity graph without redeclaring shared fields.
 
 URL config fields (`site`, `organization.url`, `organization.logo`, `founder.sameAs`) require `https://` (or `http://localhost` for dev) since v0.0.3.
 
 ## On the roadmap (toward v0.1.0)
 
-- v0.0.4 — `<TechArticleSchema>` (heavy-props pattern; sixth and final component)
 - v0.0.5 — first file output: `dist/llms.txt`
 - v0.0.6 — `dist/agents.md` + `dist/.well-known/mcp.json`
 - v0.0.7 — `dist/llms-full.txt` (content-collection-driven)
@@ -35,7 +35,7 @@ npm install @obaronai/astro-ai-readiness
 
 ## Quick start
 
-Configure (v0.0.3 accepts `site`, `organization`, and an optional `webSite` block — the Zod schema rejects unknown keys, and URL fields must use `https://` or `http://localhost`):
+Configure (v0.0.4 accepts `site`, `organization`, and an optional `webSite` block — the Zod schema rejects unknown keys, and URL fields must use `https://` or `http://localhost`):
 
 ```ts
 // astro.config.mjs
@@ -126,6 +126,37 @@ const faqs: FAQItem[] = [
 <FAQPageSchema items={faqs} />
 ```
 
+```astro
+---
+// article-detail pages — required props only
+import { TechArticleSchema } from '@obaronai/astro-ai-readiness/components'
+---
+<TechArticleSchema
+  headline="How agents handle errors"
+  description="A pattern for agent error handling that doesn't lose context."
+  datePublished="2026-04-01T12:00:00Z"
+/>
+```
+
+`<TechArticleSchema>` defaults `author` to a Person synthesized from `config.organization.founder` (name from `founder.name`, url from `founder.sameAs[0]`). Pass an explicit `author={{ name, url? }}` to override on multi-author sites. The component throws at build time if `author` is omitted and `founder` is unset — actionable error pointing at the `aiReadiness({...})` config.
+
+Advanced — full prop surface:
+
+```astro
+<TechArticleSchema
+  headline={article.title}
+  description={article.description}
+  datePublished={article.pubDate.toISOString()}
+  dateModified={(article.updatedDate ?? article.pubDate).toISOString()}
+  author={{ name: 'Guest Author', url: 'https://example.com' }}
+  image={{ url: 'https://your-site.com/og.png', width: 1200, height: 630 }}
+  articleSection="Tutorials"
+  keywords={['ai', 'agents', 'error-handling']}
+  proficiencyLevel="intermediate"
+  dependencies={['Node 22', 'Astro 5.5']}
+/>
+```
+
 Build your site (`npm run build`); inspect any `dist/*.html` — you'll see inline `<script type="application/ld+json">` blocks with cross-referenced `@id`s tying the entity graph together.
 
 ## Design principles
@@ -140,7 +171,7 @@ The v0.1 line is content → artifacts: components and files. Build-time AI-read
 
 ## Shipped on
 
-- [aiallthethings.com](https://aiallthethings.com) — AATT, the toolkit's first reference implementation. Runs five of six components on production: Organization (home), WebSite (site-wide), CollectionPage (articles + tag indexes), FAQPage (articles with FAQ frontmatter).
+- [aiallthethings.com](https://aiallthethings.com) — AATT, the toolkit's first reference implementation. Runs all six components on production: Organization + WebSite (site-wide via BaseLayout), CollectionPage (articles + framework + tag indexes), BreadcrumbList (`/about`), FAQPage (articles with FAQ frontmatter), TechArticle (every article-detail page).
 - [obaron.ai](https://obaron.ai) — Obaron's main site. Will install in FF-3.7 once v0.1.0 publishes.
 
 ## Contributing

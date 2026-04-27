@@ -33,3 +33,21 @@ export interface FAQItem {
   question: string
   answer: string
 }
+
+export interface TechArticleAuthor {
+  name: string
+  url?: string
+}
+
+/**
+ * URL string is the common case; object form supports width/height/caption
+ * when the consumer wants the richer Schema.org ImageObject shape.
+ */
+export type TechArticleImage =
+  | string
+  | {
+      url: string
+      width?: number
+      height?: number
+      caption?: string
+    }

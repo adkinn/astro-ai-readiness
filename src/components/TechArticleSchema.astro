@@ -1,0 +1,88 @@
+---
+import { config } from 'virtual:obaronai-config'
+import { jsonLd } from '../utils/json-ld'
+import type { TechArticleAuthor, TechArticleImage } from './types'
+
+interface Props {
+  // Required
+  headline: string
+  description: string
+  datePublished: string
+
+  // Optional — common
+  dateModified?: string
+  author?: TechArticleAuthor
+  image?: TechArticleImage
+  url?: string
+
+  // Optional — Schema.org TechArticle extensions
+  articleSection?: string
+  keywords?: string[]
+  proficiencyLevel?: string
+  dependencies?: string[]
+}
+
+const {
+  headline,
+  description,
+  datePublished,
+  dateModified,
+  author,
+  image,
+  url,
+  articleSection,
+  keywords,
+  proficiencyLevel,
+  dependencies,
+} = Astro.props
+
+// D-21: author defaults to a Person synthesized from config.organization.founder.
+// Founder-precondition guard: if author is omitted AND founder is unset, fail loudly
+// at build time rather than tighten the global schema (which would break consumers
+// who don't use TechArticle and don't set founder).
+const founder = config.organization.founder
+let resolvedAuthor: TechArticleAuthor
+if (author) {
+  resolvedAuthor = author
+} else {
+  if (!founder) {
+    throw new Error(
+      'TechArticleSchema: `author` prop omitted and `config.organization.founder` ' +
+      'is unset. Either pass an explicit `author` prop, or add a `founder` block to ' +
+      'the `organization` config in your `aiReadiness({...})` integration call.'
+    )
+  }
+  resolvedAuthor = {
+    name: founder.name,
+    ...(founder.sameAs && founder.sameAs[0] && { url: founder.sameAs[0] }),
+  }
+}
+
+const resolvedImage =
+  typeof image === 'string'
+    ? { '@type': 'ImageObject', url: image }
+    : image
+      ? { '@type': 'ImageObject', ...image }
+      : undefined
+
+const resolvedUrl = url ?? new URL(Astro.url.pathname, config.site).toString()
+
+const ta: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline,
+  description,
+  datePublished,
+  dateModified: dateModified ?? datePublished,
+  author: { '@type': 'Person', ...resolvedAuthor },
+  publisher: { '@id': `${config.site}#organization` },
+  url: resolvedUrl,
+}
+
+if (resolvedImage) ta.image = resolvedImage
+if (articleSection) ta.articleSection = articleSection
+if (keywords && keywords.length > 0) ta.keywords = keywords.join(', ')
+if (proficiencyLevel) ta.proficiencyLevel = proficiencyLevel
+if (dependencies && dependencies.length > 0) ta.dependencies = dependencies.join(', ')
+---
+<script is:inline type="application/ld+json" set:html={jsonLd(ta)}></script>

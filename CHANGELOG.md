@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.4] — 2026-04-27
+
+Fourth slice per `plans/08-v0.0.4-techarticle.md`. Retires the heavy-props prop pattern. **Six of six v0.1 components now live — the component sub-line is complete.** v0.0.5 begins the file-output sub-line (`dist/llms.txt` first).
+
+### Added
+
+- `<TechArticleSchema headline description datePublished {...optional} />` — heavy-props Astro component emitting Schema.org `TechArticle` JSON-LD. Required props: `headline`, `description`, `datePublished`. Optional: `dateModified` (defaults to `datePublished`), `author` (D-21 founder fallback when omitted), `image` (string URL or full `ImageObject`), `url` (defaults to canonical `Astro.url + Astro.site`), `articleSection`, `keywords` (string array → comma-joined per Schema.org `Text or Text` convention), `proficiencyLevel`, `dependencies` (string array → comma-joined). `publisher` is an `@id` reference to the site's Organization (entity-graph pattern from v0.0.2).
+- D-21 — `<TechArticleSchema>` `author` defaults to a Person synthesized from `config.organization.founder` (`name` from `founder.name`, `url` from `founder.sameAs[0]` per the existing `OrganizationSchema` convention; no separate `founder.url` field added). Multi-author sites pass an explicit `author` prop per article. Component-level **founder-precondition guard** throws at build time if `author` is omitted AND `founder` is unset — actionable error pointing at the `aiReadiness({...})` config — rather than tightening the global Zod schema (which would break consumers who don't use `<TechArticleSchema>` and don't set `founder`). See `decisions.md` D-21 for the full rationale.
+- `TechArticleAuthor` and `TechArticleImage` TypeScript types added to `./components/types.ts` and re-exported from the package barrel. Consumers `import type { TechArticleAuthor, TechArticleImage } from '@obaronai/astro-ai-readiness/components'`.
+
+### Changed
+
+- Component sub-line complete (6 of 6 v0.1 components live). The component barrel re-exports `OrganizationSchema`, `WebSiteSchema`, `CollectionSchema`, `BreadcrumbSchema`, `FAQPageSchema`, `TechArticleSchema` plus four interface types (`BreadcrumbItem`, `FAQItem`, `TechArticleAuthor`, `TechArticleImage`).
+- README + Quick Start rewritten to reflect v0.0.4 shipped reality. Status line, "What ships" section (six components), Quick Start example showing `<TechArticleSchema>` minimum + advanced usage, "Shipped on" updated to AATT running all six on production.
+- Roadmap shifts: v0.0.5 = `dist/llms.txt` (first file output); v0.0.6 = `agents.md` + `mcp.json`; v0.0.7 = `llms-full.txt`; v0.0.8 = `robots.txt` composition; v0.1.0 = polish, tests, docs.
+
 ## [0.0.3] — 2026-04-27
 
 Third slice per `plans/07-v0.0.3-breadcrumb-faq-techarticle.md`. Retires the items-array prop pattern; brings the toolkit to five of six components. `<TechArticleSchema>` (heavy-props) splits to v0.0.4 per the cadence rule (one pattern per slice).
@@ -61,7 +77,8 @@ First published release. End-to-end tracer slice per `plans/05-e2e-tracer.md`.
 - TypeScript declarations for `AiReadinessConfig`, `OrganizationConfig`, `FounderConfig`.
 - Build pipeline: tsup (ESM) for `.ts` + `cp` step for `.astro` source files into `dist/components/`.
 
-[Unreleased]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.3...HEAD
+[Unreleased]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.4...HEAD
+[0.0.4]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/obaronai/astro-ai-readiness/releases/tag/v0.0.1
