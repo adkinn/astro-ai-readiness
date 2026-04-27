@@ -72,10 +72,11 @@ export default defineConfig({
       },
       llmsTxt: {
         // Optional. When set, the toolkit ships dist/llms.txt at build time.
+        // Note: `summary` must be single-line — multi-paragraph summaries break
+        // the llms.txt blockquote shape. Use `body` (free-form markdown) for
+        // additional prose. Multi-line summary throws at config-validation time.
         summary: 'What your site does, in one sentence — for AI agents discovering your content.',
-        body:
-          '## What lives here\n\n' +
-          'A free-form markdown paragraph or two between summary and sections.',
+        body: 'A free-form markdown paragraph or two between summary and sections. Plain prose; no top-level H2 here (those are reserved for link sections below).',
         sections: [
           {
             title: 'Articles',
@@ -95,6 +96,8 @@ export default defineConfig({
   ],
 })
 ```
+
+> **Note on raw markdown.** `llmsTxt.*` string fields (`summary`, `body`, `sections[].title`, `sections[].links[].title`, `sections[].links[].description`, `deferTo.title`) are emitted as raw markdown. If you're templating user-generated content into these fields, escape `]`, `)`, and leading `>` to avoid breaking the rendered Markdown shape. Author-controlled strings (typical case) need no escaping.
 
 Use the components:
 

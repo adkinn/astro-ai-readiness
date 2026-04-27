@@ -29,7 +29,8 @@ function parseConfigOrThrow(options: unknown): AiReadinessConfig {
         return `  • ${path}: ${issue.message}`
       })
       throw new Error(
-        `aiReadiness: invalid config in aiReadiness({...}):\n${lines.join('\n')}`
+        `aiReadiness: invalid config in aiReadiness({...}):\n${lines.join('\n')}`,
+        { cause: err }
       )
     }
     throw err

@@ -59,7 +59,10 @@ const llmsTxtSectionSchema = z.object({
 }).strict()
 
 const llmsTxtSchema = z.object({
-  summary: z.string().min(1),
+  summary: z.string().min(1).refine(
+    (s) => !s.includes('\n'),
+    { message: 'summary must be single-line — multi-paragraph summaries break llms.txt blockquote shape. Use the optional `body` field for additional prose.' }
+  ),
   body: z.string().optional(),
   sections: z.array(llmsTxtSectionSchema).optional(),
   deferTo: z.object({

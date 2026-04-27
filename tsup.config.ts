@@ -14,5 +14,5 @@ export default defineConfig({
   clean: true,
   outDir: 'dist',
   external: [/\.astro$/, 'astro', 'zod'],
-  target: 'node18',
+  target: 'node22',
 })
