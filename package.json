@@ -1,6 +1,6 @@
 {
   "name": "@obaronai/astro-ai-readiness",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "AI Readiness toolkit for Astro — generates llms.txt, agents.md, .well-known/mcp.json, named-bot rules in robots.txt, and ships JSON-LD helper components.",
   "type": "module",
   "main": "./dist/index.js",

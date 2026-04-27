@@ -2,18 +2,19 @@
 
 > AI Readiness toolkit for Astro — JSON-LD helper components today, agent-discoverable file outputs (`llms.txt`, `agents.md`, `.well-known/mcp.json`, named-bot `robots.txt` rules) on the v0.1 roadmap.
 
-**Status:** v0.0.1 — first slice shipped. `<OrganizationSchema>` is live; more components and file outputs incoming on the v0.1 roadmap.
+**Status:** v0.0.2 — second slice shipped. `<OrganizationSchema>`, `<WebSiteSchema>`, and `<CollectionSchema>` are live; more components and file outputs incoming on the v0.1 roadmap.
 
-## What ships in v0.0.1
+## What ships in v0.0.2
 
-- `<OrganizationSchema />` — inline JSON-LD Organization block, all data driven from your `aiReadiness({...})` config.
+- `<OrganizationSchema />` — inline JSON-LD Organization block. Config-driven; placed once per page where it's needed (typically the home page).
+- `<WebSiteSchema />` — inline JSON-LD WebSite block. Config-driven; typically placed in your `BaseLayout` so it ships site-wide.
+- `<CollectionSchema name url description? />` — inline JSON-LD CollectionPage block. Props-driven; place on collection-index pages (`/articles/`, `/tags/[tag]/`, etc.).
 
-That's it for the first slice. The toolkit ships incrementally — see the roadmap below.
+All three components emit canonical Schema.org JSON-LD with cross-component `@id` references (`#organization`, `#website`) so search and AI consumers can resolve the entity graph without redeclaring shared fields.
 
 ## On the roadmap (toward v0.1.0)
 
-- v0.0.2 — `<WebSiteSchema>` + `<CollectionSchema>` (config-driven and props-driven respectively)
-- v0.0.3 — `<FAQPageSchema>` + `<BreadcrumbSchema>` + `<TechArticleSchema>`
+- v0.0.3 — `<FAQPageSchema>` + `<BreadcrumbSchema>` + `<TechArticleSchema>` (items-array + heavy-props patterns)
 - v0.0.4 — first file output: `dist/llms.txt`
 - v0.0.5 — `dist/agents.md` + `dist/.well-known/mcp.json`
 - v0.0.6 — `dist/llms-full.txt` (content-collection-driven)
@@ -30,7 +31,7 @@ npm install @obaronai/astro-ai-readiness
 
 ## Quick start
 
-Configure (v0.0.1 accepts `site` + `organization` only — the Zod schema rejects unknown keys):
+Configure (v0.0.2 accepts `site`, `organization`, and an optional `webSite` block — the Zod schema rejects unknown keys):
 
 ```ts
 // astro.config.mjs
@@ -51,22 +52,48 @@ export default defineConfig({
           sameAs: ['https://your-site.com', 'https://x.com/handle'],
         },
       },
+      webSite: {
+        // Optional. `name` defaults to organization.name when absent.
+        description: 'What your site does, in one sentence.',
+      },
     }),
   ],
 })
 ```
 
-Use the component:
+Use the components:
 
 ```astro
 ---
-// src/pages/index.astro
+// src/layouts/BaseLayout.astro — site-wide
+import { WebSiteSchema } from '@obaronai/astro-ai-readiness/components'
+---
+<head>
+  <WebSiteSchema />
+</head>
+```
+
+```astro
+---
+// src/pages/index.astro — home page only
 import { OrganizationSchema } from '@obaronai/astro-ai-readiness/components'
 ---
 <OrganizationSchema />
 ```
 
-That's it for v0.0.1. Build your site (`npm run build`); inspect `dist/index.html` — you'll see an inline `<script type="application/ld+json">` with your Organization data.
+```astro
+---
+// src/pages/articles/index.astro — collection index pages
+import { CollectionSchema } from '@obaronai/astro-ai-readiness/components'
+---
+<CollectionSchema
+  name="All Articles"
+  url={Astro.site + 'articles/'}
+  description="Production-tested articles, version-pinned environments."
+/>
+```
+
+Build your site (`npm run build`); inspect any `dist/*.html` — you'll see inline `<script type="application/ld+json">` blocks with cross-referenced `@id`s tying the entity graph together.
 
 ## Design principles
 

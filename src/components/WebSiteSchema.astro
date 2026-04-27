@@ -1,0 +1,16 @@
+---
+import { config } from 'virtual:obaronai-config'
+import { jsonLd } from '../utils/json-ld'
+
+const ws: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${config.site}#website`,
+  name: config.webSite?.name ?? config.organization.name,
+  url: config.site,
+  publisher: { '@id': `${config.site}#organization` },
+}
+
+if (config.webSite?.description) ws.description = config.webSite.description
+---
+<script type="application/ld+json" is:inline set:html={jsonLd(ws)}></script>

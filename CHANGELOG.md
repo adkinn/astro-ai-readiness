@@ -6,26 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-### Changed
+## [0.0.2] — 2026-04-26
 
-- README and CONTRIBUTING rewritten to reflect v0.0.1 shipped reality (per Plan 05b). Drift removed: roadmap section now lists what's coming by version; "What ships" section lists only `<OrganizationSchema>`. Will reach the npm registry with the next version publish.
-- Repo foundation aligned with the open-source repo management playbook (`obaron/brand/gh-org/repo-management.md`): added `CHANGELOG.md`, `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1), `SECURITY.md`, `.github/CODEOWNERS`, `.github/dependabot.yml`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/ci.yml`, `.github/workflows/release.yml`. Issue templates converted from Markdown to YAML forms with required-field enforcement. `CONTRIBUTING.md` relocated to `.github/CONTRIBUTING.md` per playbook convention.
-- `npm test` and `npm run lint` stub-fail (`exit 1`) until vitest + eslint land. Honest CI: contributors and Dependabot see a red rope-line for missing coverage rather than a green-painted no-op. When real configs land, swap the echo-fails for the real commands and re-add lint/test to `release.yml` (currently typecheck + build only).
-- `release.yml` hardened: tag-vs-`package.json`-version guard before publish (prevents "cannot publish over previously published version" if a tag and the manifest drift), explicit dist-artifact non-empty checks, and a comment on the hardcoded `node-version: 22` so the next LTS-policy sweep doesn't miss it.
-- `SECURITY.md` "Supported versions" section reworded — pre-1.0 the policy is "most recently published version" (no backports); the most-recent-minor policy activates at 1.0.
-- Issue forms now apply `priority: medium` as the triage default (per playbook line 271 — "default medium until evaluated") alongside the existing `type:` and `status: needs-triage` labels.
-- `CONTRIBUTING.md` adds the open-vs-closed boundary link to the org Profile README and a one-paragraph voice steer (institutional, specific, no AI-hype) so contributors can mirror the README/Profile-README tone in PRs and issue comments.
-- `dependabot.yml` annotated with rationale on the open-PR limits.
-- Pull-request template trimmed back to the playbook's spec (What changed / Why / Testing / Breaking / Linked issues + Conventional Commits hint). Earlier checklist removed for fidelity to the seed-instance spec; if we want the checklist as standard across all Obaron repos, update the playbook's PR-template description and re-add.
+Second slice per `plans/06-v0.0.2-website-collection.md`. Adds two more components (one config-driven, one props-driven), establishes the `@id`-referenced entity-graph pattern across components, and promotes the JSON-LD escape helper to a shared utility. First post-foundation release — also carries the README/CONTRIBUTING reality-update from Plan 05b and the playbook foundation alignment.
 
 ### Added
 
-- `docs/maintainer-setup.md` — durable record of the GitHub-UI / npm-web tasks needed to complete Foundation, including the **branch-protection sub-decision** the stub-fail decision exposed (require-status-checks would block every Dependabot PR until lint/test are real). Recommends Option 1 — flip status-check requirement on in the same commit that makes lint/test real. Also documents the trigger list for when `src/components/` adds a new component (`release.yml` dist verification needs appending) and the swap-when-real path for stub-failed scripts.
-- `release.yml` dist verification block carries an inline reminder that the artifact list is hardcoded and needs appending when new components ship.
+- `<WebSiteSchema />` — config-driven Astro component emitting Schema.org `WebSite` JSON-LD. Declares `@id: '<site>#website'`; references the organization via `{ '@id': '<site>#organization' }` instead of redeclaring publisher fields.
+- `<CollectionSchema name url description? />` — props-driven Astro component emitting `CollectionPage` JSON-LD. First props-accepting component in the toolkit; sets the TS `interface Props` precedent for v0.0.3+.
+- Optional `webSite` config block (`name?: string`, `description?: string`); both `.strict()` against typos. `webSite.name` defaults to `organization.name` when absent (covers the common case where brand and legal entity match).
+- `src/utils/json-ld.ts` — `jsonLd()` helper escaping `</script>` (broad `<` form) plus U+2028 / U+2029 line-separator codepoints. All three components import from it; subsequent slices inherit the same single source of truth.
+- `WebSiteConfig` TypeScript type re-exported from the package root alongside `AiReadinessConfig` / `OrganizationConfig` / `FounderConfig`.
+- `dist/utils/json-ld.{js,d.ts}` artifacts; tsup entry map updated to include the new path.
+
+### Changed
+
+- `<OrganizationSchema>` refactored to use the shared `jsonLd()` helper. Adds `@id: '<site>#organization'` to the rendered JSON-LD so `<WebSiteSchema>` and `<CollectionSchema>` can reference it without redeclaring publisher fields. No other change to the rendered fields — pre-existing AATT consumers see one new line.
+- `src/components/astro-shim.d.ts` tightened from `(props: Record<string, unknown>) => unknown` to `AstroComponentFactory` from `astro/runtime/server/index.js`. `astro check` on consumer sites now catches prop-shape errors against `<CollectionSchema>` (and any future props-driven component) at the package boundary.
+- README + Quick Start rewritten to reflect v0.0.2 shipped reality per the practice in `obaron/astro-ai-readiness/CLAUDE.md` ("README reflects shipped reality, not aspirational scope"). Status line, "What ships," Quick Start config + component examples, and the roadmap section all updated together.
+- This release also carries the v0.0.1 → v0.0.2-cumulative changes that landed since publish: README/CONTRIBUTING reality-update (Plan 05b), repo foundation files (`CHANGELOG`, `CODE_OF_CONDUCT`, `SECURITY`, `.github/CODEOWNERS`, `.github/dependabot.yml`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/ci.yml`, `.github/workflows/release.yml`), issue templates as YAML forms, `CONTRIBUTING.md` moved to `.github/`, `package.json` `engines.node` bumped 18 → 22, `aeo` + `agent-readable` keywords, `typecheck` script. Stub-failing `npm test` and `npm run lint` until vitest + eslint land. `release.yml` tag-vs-version guard, dist-artifact verification, hardcoded-list-trigger comment.
 
 ### Removed
 
-- `.github/ISSUE_TEMPLATE/bug_report.md` and `feature_request.md` (replaced by YAML form variants).
+- `.github/ISSUE_TEMPLATE/bug_report.md` and `feature_request.md` (replaced by YAML form variants in 0.0.2-cumulative).
 
 ## [0.0.1] — 2026-04-25
 
@@ -40,5 +43,6 @@ First published release. End-to-end tracer slice per `plans/05-e2e-tracer.md`.
 - TypeScript declarations for `AiReadinessConfig`, `OrganizationConfig`, `FounderConfig`.
 - Build pipeline: tsup (ESM) for `.ts` + `cp` step for `.astro` source files into `dist/components/`.
 
-[Unreleased]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/obaronai/astro-ai-readiness/releases/tag/v0.0.1

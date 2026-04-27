@@ -17,9 +17,15 @@ const organizationSchema = z.object({
   areaServed: z.string().optional(),
 }).strict()
 
+const webSiteSchema = z.object({
+  name: z.string().optional(),
+  description: z.string().optional(),
+}).strict()
+
 export const aiReadinessConfigSchema = z.object({
   site: z.string().url(),
   organization: organizationSchema,
+  webSite: webSiteSchema.optional(),
   llmsTxt: z.unknown().optional(),
   llmsFull: z.unknown().optional(),
   agentsMd: z.unknown().optional(),
@@ -30,3 +36,4 @@ export const aiReadinessConfigSchema = z.object({
 export type AiReadinessConfig = z.infer<typeof aiReadinessConfigSchema>
 export type OrganizationConfig = z.infer<typeof organizationSchema>
 export type FounderConfig = z.infer<typeof founderSchema>
+export type WebSiteConfig = z.infer<typeof webSiteSchema>

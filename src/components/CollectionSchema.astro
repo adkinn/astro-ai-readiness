@@ -1,0 +1,24 @@
+---
+import { config } from 'virtual:obaronai-config'
+import { jsonLd } from '../utils/json-ld'
+
+interface Props {
+  name: string
+  url: string
+  description?: string
+}
+
+const { name, url, description } = Astro.props
+
+const cp: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name,
+  url,
+  isPartOf: { '@id': `${config.site}#website` },
+  publisher: { '@id': `${config.site}#organization` },
+}
+
+if (description) cp.description = description
+---
+<script type="application/ld+json" is:inline set:html={jsonLd(cp)}></script>

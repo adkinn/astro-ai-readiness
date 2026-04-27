@@ -1,7 +1,7 @@
 import type { AstroIntegration } from 'astro'
 import { aiReadinessConfigSchema, type AiReadinessConfig } from './config.js'
 
-export type { AiReadinessConfig, OrganizationConfig, FounderConfig } from './config.js'
+export type { AiReadinessConfig, OrganizationConfig, FounderConfig, WebSiteConfig } from './config.js'
 
 const VIRTUAL_ID = 'virtual:obaronai-config'
 const RESOLVED_VIRTUAL_ID = '\0' + VIRTUAL_ID

@@ -1,4 +1,5 @@
 declare module '*.astro' {
-  const Component: (props: Record<string, unknown>) => unknown
+  import type { AstroComponentFactory } from 'astro/runtime/server/index.js'
+  const Component: AstroComponentFactory
   export default Component
 }

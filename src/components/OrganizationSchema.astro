@@ -1,21 +1,23 @@
 ---
 import { config } from 'virtual:obaronai-config'
+import { jsonLd } from '../utils/json-ld'
 
 const org = config.organization
 
 type SchemaJson = Record<string, unknown>
 
-const jsonLd: SchemaJson = {
+const orgLd: SchemaJson = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  '@id': `${config.site}#organization`,
   name: org.name,
 }
 
-if (org.url) jsonLd.url = org.url
-if (org.logo) jsonLd.logo = org.logo
-if (org.foundingDate) jsonLd.foundingDate = org.foundingDate
-if (org.knowsAbout && org.knowsAbout.length > 0) jsonLd.knowsAbout = org.knowsAbout
-if (org.areaServed) jsonLd.areaServed = org.areaServed
+if (org.url) orgLd.url = org.url
+if (org.logo) orgLd.logo = org.logo
+if (org.foundingDate) orgLd.foundingDate = org.foundingDate
+if (org.knowsAbout && org.knowsAbout.length > 0) orgLd.knowsAbout = org.knowsAbout
+if (org.areaServed) orgLd.areaServed = org.areaServed
 
 if (org.founder) {
   const founder: SchemaJson = {
@@ -25,9 +27,7 @@ if (org.founder) {
   if (org.founder.jobTitle) founder.jobTitle = org.founder.jobTitle
   if (org.founder.description) founder.description = org.founder.description
   if (org.founder.sameAs && org.founder.sameAs.length > 0) founder.sameAs = org.founder.sameAs
-  jsonLd.founder = founder
+  orgLd.founder = founder
 }
-
-const jsonLdString = JSON.stringify(jsonLd).replace(/</g, '\\u003c')
 ---
-<script type="application/ld+json" is:inline set:html={jsonLdString}></script>
+<script type="application/ld+json" is:inline set:html={jsonLd(orgLd)}></script>
