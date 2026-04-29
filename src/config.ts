@@ -71,14 +71,62 @@ const llmsTxtSchema = z.object({
   }).strict().optional(),
 }).strict()
 
+// agents.md — markdown composition for AI-agent discovery
+const agentsMdLinkSchema = z.object({
+  title: z.string().min(1),
+  url: z.string().url(),
+  description: z.string().optional(),
+}).strict()
+
+const agentsMdSchema = z.object({
+  description: z.string().min(1),
+  audience: z.string().optional(),
+  contact: z.string().optional(),
+  links: z.array(agentsMdLinkSchema).min(1).optional(),
+}).strict()
+
+// .well-known/mcp.json — Model Context Protocol discovery file
+const mcpToolSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().min(1),
+}).strict()
+
+// Active server — has a live URL + real tools.
+const mcpActiveServerSchema = z.object({
+  status: z.literal('active'),
+  name: z.string().min(1),
+  url: z.string().url(),
+  description: z.string().min(1),
+  tools: z.array(mcpToolSchema).min(1),
+}).strict()
+
+// Planned server — declares intent; url is forbidden per D-22.
+const mcpPlannedServerSchema = z.object({
+  status: z.literal('planned'),
+  name: z.string().min(1),
+  description: z.string().min(1),
+  planned_tools: z.array(mcpToolSchema).min(1),
+}).strict()
+
+// Discriminated union on `status` — per-branch errors via friendlier-Zod-error wrap.
+const mcpServerSchema = z.discriminatedUnion('status', [
+  mcpActiveServerSchema,
+  mcpPlannedServerSchema,
+])
+
+const mcpSchema = z.object({
+  version: z.string().optional(),
+  servers: z.array(mcpServerSchema).min(1),
+}).strict()
+
 export const aiReadinessConfigSchema = z.object({
   site: httpsUrl,
   organization: organizationSchema,
   webSite: webSiteSchema.optional(),
   llmsTxt: llmsTxtSchema.optional(),
   llmsFull: z.unknown().optional(),
-  agentsMd: z.unknown().optional(),
-  mcp: z.unknown().optional(),
+  agentsMd: agentsMdSchema.optional(),
+  mcp: mcpSchema.optional(),
   robotsTxt: z.unknown().optional(),
 }).strict()
 
@@ -87,3 +135,5 @@ export type OrganizationConfig = z.infer<typeof organizationSchema>
 export type FounderConfig = z.infer<typeof founderSchema>
 export type WebSiteConfig = z.infer<typeof webSiteSchema>
 export type LlmsTxtConfig = z.infer<typeof llmsTxtSchema>
+export type AgentsMdConfig = z.infer<typeof agentsMdSchema>
+export type McpConfig = z.infer<typeof mcpSchema>

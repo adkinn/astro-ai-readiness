@@ -1,10 +1,10 @@
 # @obaronai/astro-ai-readiness
 
-> AI Readiness toolkit for Astro — six JSON-LD helper components plus `dist/llms.txt` today; `agents.md`, `mcp.json`, `llms-full.txt`, and `robots.txt` rules on the v0.1 roadmap.
+> AI Readiness toolkit for Astro — six JSON-LD helper components plus `dist/llms.txt`, `dist/agents.md`, and `dist/.well-known/mcp.json` today; `llms-full.txt` and `robots.txt` on the v0.1 roadmap.
 
-**Status:** v0.0.5 — fifth slice shipped. **Component sub-line complete (6 of 6); file-output sub-line begins.** `dist/llms.txt` is the first toolkit-emitted artifact via the `astro:build:done` hook. Four more outputs to follow on the same hook.
+**Status:** v0.0.6 — sixth slice shipped. **Component sub-line complete (6 of 6); three of five file outputs live.** Multi-output orchestration on the `astro:build:done` hook is established — subsequent file-output slices wire in without hook changes.
 
-## What ships in v0.0.5
+## What ships in v0.0.6
 
 **Six JSON-LD components** (component sub-line complete):
 - `<OrganizationSchema />` — Organization block. Config-driven; place in your `BaseLayout` so it ships site-wide and the `#organization` `@id` reference resolves on every page.
@@ -14,10 +14,12 @@
 - `<FAQPageSchema items={[{ question, answer }, ...]} />` — FAQPage. Items-array prop; place on pages with FAQ data. Long-form answers escape `</script>` and U+2028 / U+2029 automatically. Empty `items` skips emission.
 - `<TechArticleSchema headline description datePublished {...optional} />` — TechArticle block. Heavy-props; place on article-detail pages. `author` defaults to a Person synthesized from `config.organization.founder`; pass an explicit `author` prop to override.
 
-**One file output** (file-output sub-line begins):
-- `dist/llms.txt` — `astro:build:done` hook composes the [llmstxt.org](https://llmstxt.org/) format from the `llmsTxt` config block (`summary`, optional `body`, optional `sections`, optional `deferTo`). Config-driven; opt-in (no `llmsTxt` config = no file shipped). Spec-shape: H1 / blockquote summary / free-form markdown body / H2 sections with bulleted links / canonical-reference footer.
+**Three file outputs** (three of five file-output sub-line entries live):
+- `dist/llms.txt` — [llmstxt.org](https://llmstxt.org/) format from the `llmsTxt` config block. H1 / blockquote summary / optional body / H2 sections with bulleted links / optional canonical-reference footer. Opt-in.
+- `dist/agents.md` — Markdown discovery file for AI-agent crawlers from the `agentsMd` config block. H1 / blockquote description / optional `## Audience`, `## Contact`, `## Links` sections. Opt-in.
+- `dist/.well-known/mcp.json` — [Model Context Protocol](https://modelcontextprotocol.io/) discovery file from the `mcp` config block. Pretty-printed JSON with `$schema` reference to the toolkit-published v1 shape (per D-22). Supports `status: 'active'` (requires `url` + `tools[]`) and `status: 'planned'` (requires `planned_tools[]`; `url` forbidden by schema). Opt-in.
 
-**`@astrojs/sitemap` detection per D-8.** When you call `aiReadiness({...})` and `@astrojs/sitemap` isn't in your integrations list, the toolkit logs a build-time warning. Sitemap is an AI-Readiness baseline; the sitemap reference itself ships in `robots.txt` (Plan 12 / v0.0.8).
+**`@astrojs/sitemap` detection per D-8.** When you call `aiReadiness({...})` and `@astrojs/sitemap` isn't in your integrations list, the toolkit logs a build-time warning. Sitemap is an AI-Readiness baseline; the sitemap reference itself ships in `robots.txt` (v0.0.8).
 
 All six components emit canonical Schema.org JSON-LD with cross-component `@id` references (`#organization`, `#website`) so search and AI consumers can resolve the entity graph without redeclaring shared fields.
 
@@ -27,10 +29,9 @@ Config validation errors are formatted with one issue per line — `path: messag
 
 ## On the roadmap (toward v0.1.0)
 
-- v0.0.6 — `dist/agents.md` + `dist/.well-known/mcp.json` (multi-output orchestration on the same hook)
-- v0.0.7 — `dist/llms-full.txt` (content-collection-driven)
+- v0.0.7 — `dist/llms-full.txt` (content-collection introspection — first time the toolkit reads consumer content)
 - v0.0.8 — `dist/robots.txt` composition (compose-with-existing pattern; sitemap reference lands here)
-- v0.1.0 — polish, tests, docs
+- v0.1.0 — polish, tests, docs; FF-3.7 full install (obaron.ai)
 
 Track progress: <https://github.com/obaronai/astro-ai-readiness/milestones>
 
@@ -42,7 +43,7 @@ npm install @obaronai/astro-ai-readiness
 
 ## Quick start
 
-Configure (v0.0.5 accepts `site`, `organization`, optional `webSite`, and optional `llmsTxt` blocks — the Zod schema rejects unknown keys, and URL fields must use `https://` or `http://localhost`):
+Configure (v0.0.6 accepts `site`, `organization`, optional `webSite`, optional `llmsTxt`, optional `agentsMd`, and optional `mcp` blocks — the Zod schema rejects unknown keys, and URL fields must use `https://` or `http://localhost`):
 
 ```ts
 // astro.config.mjs
@@ -92,12 +93,49 @@ export default defineConfig({
           url: 'https://your-site.com/articles/',
         },
       },
+      agentsMd: {
+        // Optional. When set, the toolkit ships dist/agents.md at build time.
+        description: 'What your site does and who it serves — for AI-agent crawlers.',
+        audience: 'Developers and AI agents acting on their behalf.',
+        contact: 'hello@your-site.com',
+        links: [
+          { title: 'Articles', url: 'https://your-site.com/articles/', description: 'All articles' },
+          { title: 'RSS Feed', url: 'https://your-site.com/rss.xml', description: 'Machine-readable article stream' },
+        ],
+      },
+      mcp: {
+        // Optional. When set, the toolkit ships dist/.well-known/mcp.json at build time.
+        // Each server must have status: 'active' or status: 'planned'.
+        // Active: requires url + tools[]. Planned: requires planned_tools[]; url is forbidden.
+        servers: [
+          {
+            // A live MCP server — must have url + tools.
+            status: 'active',
+            name: 'your-knowledge',
+            url: 'https://mcp.your-site.com',
+            description: 'MCP server exposing your site knowledge for AI agents.',
+            tools: [
+              { name: 'search_articles', description: 'Search articles by keyword or tag.' },
+              { name: 'fetch_article', description: 'Fetch a specific article by slug.' },
+            ],
+          },
+          {
+            // A planned server — declares intent without a live URL.
+            status: 'planned',
+            name: 'your-future-server',
+            description: 'Planned MCP server for future capability.',
+            planned_tools: [
+              { name: 'lookup', description: 'Lookup by ID once the server ships.' },
+            ],
+          },
+        ],
+      },
     }),
   ],
 })
 ```
 
-> **Note on raw markdown.** `llmsTxt.*` string fields (`summary`, `body`, `sections[].title`, `sections[].links[].title`, `sections[].links[].description`, `deferTo.title`) are emitted as raw markdown. If you're templating user-generated content into these fields, escape `]`, `)`, and leading `>` to avoid breaking the rendered Markdown shape. Author-controlled strings (typical case) need no escaping.
+> **Note on raw markdown.** `llmsTxt.*` and `agentsMd.*` string fields are emitted as raw markdown. If you're templating user-generated content into `llmsTxt.summary`, `llmsTxt.body`, `llmsTxt.sections[].*.title`, `agentsMd.description`, `agentsMd.audience`, `agentsMd.contact`, or `agentsMd.links[].*.title` / `agentsMd.links[].*.description`, escape `]`, `)`, and leading `>` to avoid breaking the rendered Markdown shape. Author-controlled strings (typical case) need no escaping. `mcp.json` is JSON-serialized and has no markdown-injection surface.
 
 Use the components:
 
@@ -200,7 +238,7 @@ The v0.1 line is content → artifacts: components and files. Build-time AI-read
 
 ## Shipped on
 
-- [aiallthethings.com](https://aiallthethings.com) — AATT, the toolkit's first reference implementation. Runs all six components on production plus toolkit-emitted `dist/llms.txt` at <https://aiallthethings.com/llms.txt>. Components: Organization + WebSite (site-wide via BaseLayout), CollectionPage (articles + framework + tag indexes), BreadcrumbList (`/about`), FAQPage (articles with FAQ frontmatter), TechArticle (every article-detail page).
+- [aiallthethings.com](https://aiallthethings.com) — AATT, the toolkit's first reference implementation. Runs all six components on production plus three toolkit-emitted files: `dist/llms.txt` at <https://aiallthethings.com/llms.txt>, `dist/agents.md` at <https://aiallthethings.com/agents.md>, and `dist/.well-known/mcp.json` at <https://aiallthethings.com/.well-known/mcp.json>. Components: Organization + WebSite (site-wide via BaseLayout), CollectionPage (articles + framework + tag indexes), BreadcrumbList (`/about`), FAQPage (articles with FAQ frontmatter), TechArticle (every article-detail page).
 - [obaron.ai](https://obaron.ai) — Obaron's main site. Will install in FF-3.7 once v0.1.0 publishes.
 
 ## Contributing

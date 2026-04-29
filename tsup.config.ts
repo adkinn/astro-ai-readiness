@@ -8,6 +8,8 @@ export default defineConfig({
     'components/types': 'src/components/types.ts',
     'utils/json-ld': 'src/utils/json-ld.ts',
     'outputs/llms-txt': 'src/outputs/llms-txt.ts',
+    'outputs/agents-md': 'src/outputs/agents-md.ts',
+    'outputs/mcp-json': 'src/outputs/mcp-json.ts',
   },
   format: ['esm'],
   dts: true,

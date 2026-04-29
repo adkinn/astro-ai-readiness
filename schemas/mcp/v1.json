@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/obaronai/astro-ai-readiness/v0.0.6/schemas/mcp/v1.json",
+  "title": "Obaron MCP Discovery v1",
+  "description": "Discovery file shape emitted by @obaronai/astro-ai-readiness for /.well-known/mcp.json. Per D-22, includes a toolkit-specific status: 'active' | 'planned' field gating tools (active) vs planned_tools (planned).",
+  "type": "object",
+  "required": ["version", "servers"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string", "format": "uri" },
+    "version": { "type": "string" },
+    "servers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["status", "name", "url", "description", "tools"],
+            "additionalProperties": false,
+            "properties": {
+              "status": { "const": "active" },
+              "name": { "type": "string", "minLength": 1 },
+              "url": { "type": "string", "format": "uri" },
+              "description": { "type": "string", "minLength": 1 },
+              "tools": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "$ref": "#/definitions/tool" }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["status", "name", "description", "planned_tools"],
+            "additionalProperties": false,
+            "properties": {
+              "status": { "const": "planned" },
+              "name": { "type": "string", "minLength": 1 },
+              "description": { "type": "string", "minLength": 1 },
+              "planned_tools": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "$ref": "#/definitions/tool" }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "tool": {
+      "type": "object",
+      "required": ["name", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

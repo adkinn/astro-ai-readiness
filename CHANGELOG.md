@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.6] — 2026-04-29
+
+Sixth slice per `plans/10-v0.0.6-agents-md-mcp-json.md`. **Multi-output orchestration on the `astro:build:done` hook — three of five file outputs now live.** Retires the multi-output orchestration pattern, subdirectory write in `dist/`, and JSON file emission. Component sub-line remains complete from v0.0.4.
+
+### Added
+
+- `dist/agents.md` output — toolkit composes a markdown discovery file for AI-agent crawlers from the new `agentsMd` config block at consumer build time. Format: H1 (`organization.name`) / blockquote (`agentsMd.description`) / optional `## Audience` section / optional `## Contact` section / optional `## Links` section with bulleted links. POSIX trailing-newline convention. Opt-in.
+- `dist/.well-known/mcp.json` output — toolkit composes a Model Context Protocol discovery file from the new `mcp` config block. Pretty-printed JSON (2-space indent) with a `$schema` reference to the toolkit-published v1 JSON Schema (per D-22). Supports `status: 'active'` servers (requires `name`, `url`, `description`, `tools[]`) and `status: 'planned'` servers (requires `name`, `description`, `planned_tools[]`; `url` forbidden by `.strict()` schema). First JSON file output and first subdirectory write (`dist/.well-known/`) in the toolkit. Opt-in.
+- `repo/schemas/mcp/v1.json` — JSON Schema document (draft-07) describing the toolkit's mcp.json v1 shape, including the `status: 'active' | 'planned'` discriminator and the `tools` / `planned_tools` conventions. Ships in the npm tarball via the `files` allowlist. `$schema` field in emitted `mcp.json` references this document at `https://raw.githubusercontent.com/obaronai/astro-ai-readiness/v0.0.6/schemas/mcp/v1.json` — live the moment the v0.0.6 git tag pushes (D-22).
+- `agentsMd` Zod schema replacing the prior `z.unknown().optional()`. Required: `description` (string). Optional: `audience` (string), `contact` (string), `links` (array of `{ title, url, description? }` — `links.min(1)` guards against an empty array at parse time). All nested objects `.strict()`.
+- `mcp` Zod schema replacing the prior `z.unknown().optional()`. Required: `servers` (array, `.min(1)`). Optional: `version` (defaults to `'1.0'` at compose time). Each server is a `z.discriminatedUnion('status', [active, planned])` — active branch requires `name + url + description + tools[]`; planned branch requires `name + description + planned_tools[]` and forbids `url` via `.strict()`. Per-branch errors are laser-actionable via the friendlier-Zod-error wrap from v0.0.5.
+- `AgentsMdConfig` and `McpConfig` TypeScript types re-exported from the package barrel: `import type { AgentsMdConfig, McpConfig } from '@obaronai/astro-ai-readiness'`.
+- `src/outputs/agents-md.ts` — pure `composeAgentsMd(config)` + filesystem `writeAgentsMd(config, dir, logger)` pair. Same composer + writer module shape from v0.0.5's `outputs/llms-txt.ts`.
+- `src/outputs/mcp-json.ts` — pure `composeMcpJson(config)` + filesystem `writeMcpJson(config, dir, logger)` pair. Writer calls `fs.mkdir(subdir, { recursive: true })` before `fs.writeFile` — idempotent across re-builds and works on a fresh `dist/` without the subdirectory pre-existing.
+
+### Changed
+
+- `astro:build:done` hook grows from one if-then to three. Sequential `await`s preserve deterministic order across builds: llms.txt → agents.md → mcp.json. Each output gated independently on its config block. Future outputs (`llms-full.txt`, `robots.txt`) wire in at the same hook without hook changes.
+- `outputs/` per-output module shape now exercised across two formats (markdown, JSON) and two write shapes (flat dist write, subdirectory write). Pattern load-bearing on AATT main through every subsequent file-output slice.
+- README + Quick Start rewritten to reflect v0.0.6 shipped reality. Status line, "What ships" section (six components + three file outputs), Quick Start config extended with `agentsMd` and `mcp` blocks (active + planned server examples), raw-markdown caveat extended to cover `agentsMd.*` fields, "Shipped on" updated to AATT carrying agents.md and mcp.json in production. Roadmap: v0.0.7 = `llms-full.txt`; v0.0.8 = `robots.txt`; v0.1.0 = polish + FF-3.7 full install.
+- **Markdown-injection caveat extended to agents.md** — `agentsMd.description`, `agentsMd.audience`, `agentsMd.contact`, `agentsMd.links[].title`, `agentsMd.links[].description` are emitted as raw markdown. Same consumer-responsibility note as `llmsTxt.*`. `mcp.json` is JSON-serialized and has no markdown-injection surface.
+
 ## [0.0.5] — 2026-04-27
 
 Fifth slice per `plans/09-v0.0.5-llms-txt.md`. **First file-output slice — opens the file-output sub-line.** Retires the `astro:build:done` hook + dist-write pattern; subsequent slices (Plans 10–12) use the same hook to emit `agents.md`, `mcp.json`, `llms-full.txt`, and `robots.txt`. Component sub-line (six of six) remains complete from v0.0.4.
@@ -98,7 +120,8 @@ First published release. End-to-end tracer slice per `plans/05-e2e-tracer.md`.
 - TypeScript declarations for `AiReadinessConfig`, `OrganizationConfig`, `FounderConfig`.
 - Build pipeline: tsup (ESM) for `.ts` + `cp` step for `.astro` source files into `dist/components/`.
 
-[Unreleased]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.5...HEAD
+[Unreleased]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.6...HEAD
+[0.0.6]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.2...v0.0.3
