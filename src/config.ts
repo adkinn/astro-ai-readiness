@@ -74,12 +74,15 @@ const llmsTxtSchema = z.object({
 // agents.md — markdown composition for AI-agent discovery
 const agentsMdLinkSchema = z.object({
   title: z.string().min(1),
-  url: z.string().url(),
+  url: httpsUrl,
   description: z.string().optional(),
 }).strict()
 
 const agentsMdSchema = z.object({
-  description: z.string().min(1),
+  description: z.string().min(1).refine(
+    (s) => !s.includes('\n'),
+    { message: 'description must be single-line — use audience/contact fields for additional prose' }
+  ),
   audience: z.string().optional(),
   contact: z.string().optional(),
   links: z.array(agentsMdLinkSchema).min(1).optional(),

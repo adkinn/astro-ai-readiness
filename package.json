@@ -1,7 +1,7 @@
 {
   "name": "@obaronai/astro-ai-readiness",
   "version": "0.0.6",
-  "description": "AI Readiness toolkit for Astro — six JSON-LD helper components today (Organization, WebSite, CollectionPage, Breadcrumb, FAQPage, TechArticle). File outputs (llms.txt, agents.md, mcp.json, robots.txt rules) on the v0.1 roadmap.",
+  "description": "AI Readiness toolkit for Astro — six JSON-LD components + dist/llms.txt, dist/agents.md, dist/.well-known/mcp.json. dist/llms-full.txt and dist/robots.txt on the roadmap.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
