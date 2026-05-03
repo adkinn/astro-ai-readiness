@@ -27,7 +27,7 @@
     "lint": "echo 'lint not configured yet — stub-failing per repo-management.md hygiene' && exit 1"
   },
   "dependencies": {
-    "zod": "^3.23.0"
+    "zod": "^4.4.2"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
