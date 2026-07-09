@@ -1,14 +1,14 @@
-import { mkdir, writeFile } from 'node:fs/promises'
 import type { AiReadinessConfig, McpConfig } from '../config.js'
+import { writeOutput } from './write-output.js'
 
 /**
  * Canonical $schema reference for the toolkit's mcp v1 discovery shape.
- * Locked at v0.0.6 to the repo-shipped JSON Schema document, GitHub-pinned at
- * the v0.0.6 tag. URL is live the moment `git push origin v0.0.6` completes;
- * no obaron.ai infra dependency at v0.0.6. v0.1.0+ may relocate per D-22.
+ * Pinned to the repo-shipped JSON Schema document at the v0.0.7 tag. URL is
+ * live the moment `git push origin v0.0.7` completes on the adkinn repo; no
+ * external infra dependency. v0.1.0+ may relocate per D-22.
  */
 const MCP_SCHEMA_URL =
-  'https://raw.githubusercontent.com/obaronai/astro-ai-readiness/v0.0.6/schemas/mcp/v1.json'
+  'https://raw.githubusercontent.com/adkinn/astro-ai-readiness/v0.0.7/schemas/mcp/v1.json'
 
 /**
  * Pure composer — returns the mcp.json content string. Testable without filesystem.
@@ -42,7 +42,7 @@ export function composeMcpJson(
 /**
  * Filesystem writer — composes content + writes to dist/.well-known/mcp.json.
  * Creates the .well-known/ subdirectory first (idempotent via { recursive: true }).
- * Logs at info on write; logs at warn on failure and re-throws.
+ * Skips (and warns) if the consumer already ships the file. See writeOutput.
  */
 export async function writeMcpJson(
   config: AiReadinessConfig,
@@ -55,13 +55,5 @@ export async function writeMcpJson(
   )
   const subdir = new URL('.well-known/', dir)
   const target = new URL('.well-known/mcp.json', dir)
-  try {
-    await mkdir(subdir, { recursive: true })
-    await writeFile(target, content, 'utf-8')
-    logger.info(`wrote .well-known/mcp.json (${content.length} bytes)`)
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err)
-    logger.warn(`failed to write .well-known/mcp.json at ${target.pathname}: ${msg}`)
-    throw err
-  }
+  await writeOutput(target, content, '.well-known/mcp.json', logger, subdir)
 }

@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for the suggestion. Before filing, check the [README roadmap](../../blob/main/README.md#on-the-roadmap-toward-v010) — your idea may already be coming. The toolkit's scope is "AI Readiness for Astro sites" anchored to [Obaron's rubric](https://obaron.ai/methodology); features outside that scope will be politely closed.
+        Thanks for the suggestion. Before filing, check the [README roadmap](../../blob/main/README.md#on-the-roadmap-toward-v010) — your idea may already be coming. The toolkit's scope is "AI Readiness for Astro sites" — generating agent-readable artifacts (llms.txt, agents.md, robots.txt, mcp.json) and JSON-LD helpers at build time. Features outside that scope will be politely closed.
 
   - type: textarea
     id: problem
@@ -48,10 +48,9 @@ body:
   - type: textarea
     id: scope-check
     attributes:
-      label: Open-vs-closed boundary check
+      label: Scope fit
       description: |
-        Per the [Obaron OSS scope](https://github.com/obaronai/.github/blob/main/profile/README.md), the toolkit ships open-source helpers; the scoring engine and managed services are closed-source product. Does this feature fit the open-source side?
-        Which rubric category at [obaron.ai/methodology](https://obaron.ai/methodology) does it map to?
+        The toolkit generates AI-readiness artifacts for Astro sites at build time — llms.txt, agents.md, robots.txt, .well-known/mcp.json, and JSON-LD components. How does your request fit that scope? Adjacent niceties (Lighthouse tuning, OG image generation, sitemap depth) are generally out of scope.
     validations:
       required: true
 

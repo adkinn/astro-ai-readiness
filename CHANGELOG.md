@@ -1,10 +1,34 @@
 # Changelog
 
-All notable changes to `@obaronai/astro-ai-readiness` will be documented in this file.
+All notable changes to `@adkinn/astro-ai-readiness` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Pre-1.0 releases may include breaking changes in MINOR bumps per [semver §4](https://semver.org/#spec-item-4).
 
 ## [Unreleased]
+
+## [0.0.7] — 2026-07-08
+
+Seventh slice: closes the inert-config gap and makes the v0.1 file-output set real. `llmsFull` and `robotsTxt` are now typed config blocks with build-time outputs instead of `z.unknown()` placeholders.
+
+### Added
+
+- `dist/llms-full.txt` output from the new typed `llmsFull` config block. v0.0.7 is manual/config-driven (`content` and/or `sections`); content-collection assisted generation remains a later slice.
+- `dist/robots.txt` output from the new typed `robotsTxt` config block. Presets: `search-visible`, `training-opt-out` (default), and `private`; supports explicit rules, `Sitemap`, `Content-Signal`, and appended custom lines.
+- `LlmsFullConfig` and `RobotsTxtConfig` type exports from the package barrel.
+- Node built-in test runner coverage for all five file-output composers plus JSON-LD escaping and config rejection of old boolean placeholder values.
+- Package sanity lint script covering package-lock metadata, real lint/test scripts, Node engine floor, exports artifact existence, and output-module build wiring.
+
+### Changed
+
+- `test` now runs real checks (`npm run build && node --test tests/*.test.mjs`) instead of a stub-failing placeholder.
+- `lint` now runs `typecheck`, `build`, and package sanity checks instead of a stub-failing placeholder.
+- Node engine floor tightened from `>=22.0.0` to `>=22.12.0`, matching Astro 6's documented floor.
+- `astro` is now an explicit dev dependency for local package verification while remaining a peer dependency for consumers.
+- README now reflects the v0.0.7 shipped surface and documents `llmsFull` / `robotsTxt`.
+
+### Fixed
+
+- `llmsFull` and `robotsTxt` no longer accept arbitrary unknown config that silently does nothing.
 
 ## [0.0.6] — 2026-04-29
 
@@ -14,10 +38,10 @@ Sixth slice per `plans/10-v0.0.6-agents-md-mcp-json.md`. **Multi-output orchestr
 
 - `dist/agents.md` output — toolkit composes a markdown discovery file for AI-agent crawlers from the new `agentsMd` config block at consumer build time. Format: H1 (`organization.name`) / blockquote (`agentsMd.description`) / optional `## Audience` section / optional `## Contact` section / optional `## Links` section with bulleted links. POSIX trailing-newline convention. Opt-in.
 - `dist/.well-known/mcp.json` output — toolkit composes a Model Context Protocol discovery file from the new `mcp` config block. Pretty-printed JSON (2-space indent) with a `$schema` reference to the toolkit-published v1 JSON Schema (per D-22). Supports `status: 'active'` servers (requires `name`, `url`, `description`, `tools[]`) and `status: 'planned'` servers (requires `name`, `description`, `planned_tools[]`; `url` forbidden by `.strict()` schema). First JSON file output and first subdirectory write (`dist/.well-known/`) in the toolkit. Opt-in.
-- `repo/schemas/mcp/v1.json` — JSON Schema document (draft-07) describing the toolkit's mcp.json v1 shape, including the `status: 'active' | 'planned'` discriminator and the `tools` / `planned_tools` conventions. Ships in the npm tarball via the `files` allowlist. `$schema` field in emitted `mcp.json` references this document at `https://raw.githubusercontent.com/obaronai/astro-ai-readiness/v0.0.6/schemas/mcp/v1.json` — live the moment the v0.0.6 git tag pushes (D-22).
+- `repo/schemas/mcp/v1.json` — JSON Schema document (draft-07) describing the toolkit's mcp.json v1 shape, including the `status: 'active' | 'planned'` discriminator and the `tools` / `planned_tools` conventions. Ships in the npm tarball via the `files` allowlist. `$schema` field in emitted `mcp.json` references this document at `https://raw.githubusercontent.com/adkinn/astro-ai-readiness/v0.0.6/schemas/mcp/v1.json` — live the moment the v0.0.6 git tag pushes (D-22).
 - `agentsMd` Zod schema replacing the prior `z.unknown().optional()`. Required: `description` (string). Optional: `audience` (string), `contact` (string), `links` (array of `{ title, url, description? }` — `links.min(1)` guards against an empty array at parse time). All nested objects `.strict()`.
 - `mcp` Zod schema replacing the prior `z.unknown().optional()`. Required: `servers` (array, `.min(1)`). Optional: `version` (defaults to `'1.0'` at compose time). Each server is a `z.discriminatedUnion('status', [active, planned])` — active branch requires `name + url + description + tools[]`; planned branch requires `name + description + planned_tools[]` and forbids `url` via `.strict()`. Per-branch errors are laser-actionable via the friendlier-Zod-error wrap from v0.0.5.
-- `AgentsMdConfig` and `McpConfig` TypeScript types re-exported from the package barrel: `import type { AgentsMdConfig, McpConfig } from '@obaronai/astro-ai-readiness'`.
+- `AgentsMdConfig` and `McpConfig` TypeScript types re-exported from the package barrel: `import type { AgentsMdConfig, McpConfig } from '@adkinn/astro-ai-readiness'`.
 - `src/outputs/agents-md.ts` — pure `composeAgentsMd(config)` + filesystem `writeAgentsMd(config, dir, logger)` pair. Same composer + writer module shape from v0.0.5's `outputs/llms-txt.ts`.
 - `src/outputs/mcp-json.ts` — pure `composeMcpJson(config)` + filesystem `writeMcpJson(config, dir, logger)` pair. Writer calls `fs.mkdir(subdir, { recursive: true })` before `fs.writeFile` — idempotent across re-builds and works on a fresh `dist/` without the subdirectory pre-existing.
 
@@ -36,7 +60,7 @@ Fifth slice per `plans/09-v0.0.5-llms-txt.md`. **First file-output slice — ope
 
 - `dist/llms.txt` output — toolkit composes the [llmstxt.org](https://llmstxt.org/) format from the new `llmsTxt` config block at consumer build time via the `astro:build:done` hook. Emits H1 (`organization.name`) / blockquote (`summary`) / optional free-form markdown body / optional H2 sections with bulleted links / optional `Canonical reference: [title](url)` footer after `---` rule. POSIX trailing-newline convention. Opt-in: when `llmsTxt` is absent from the config, no file ships.
 - `llmsTxt` Zod schema replacing the prior `z.unknown().optional()`. Required: `summary` (string). Optional: `body` (free-form markdown), `sections` (array of `{ title, links: [{ title, url, description? }] }` — `links.min(1)` guards against empty sections at parse time), `deferTo` (single canonical-reference `{ title, url }`). All nested objects `.strict()`. Link URLs require `https://` (or `http://localhost` for dev) per the v0.0.3 HTTPS refine.
-- `LlmsTxtConfig` TypeScript type re-exported from the package barrel: `import type { LlmsTxtConfig } from '@obaronai/astro-ai-readiness'`.
+- `LlmsTxtConfig` TypeScript type re-exported from the package barrel: `import type { LlmsTxtConfig } from '@adkinn/astro-ai-readiness'`.
 - `src/outputs/llms-txt.ts` — pure `composeLlmsTxt(config)` + filesystem `writeLlmsTxt(config, dir, logger)` pair. Composer is testable in isolation; writer wraps the composer with `fs.writeFile`. Establishes the per-output module shape (composer + writer) that Plans 10–12 inherit.
 - `@astrojs/sitemap` detection per D-8. At `astro:config:setup`, the integration walks `astroConfig.integrations` for `'@astrojs/sitemap'`; if absent, `logger.warn(...)` fires unconditionally with an actionable message — sitemap is an AI Readiness baseline, the warning belongs at the integration level. The reference line itself ships in `robots.txt` per the matrix routing (Plan 12), not in `llms.txt`.
 - Friendlier Zod error formatting (closes High #3 carried since v0.0.1). The integration-factory `parse()` is now wrapped in `parseConfigOrThrow(options)` — on `ZodError`, throws a single `Error` with one issue per line: `path: message`. Replaces the default JSON-shaped `[{ "code": "invalid_type", ... }]` blob. Compounds across every config field added in subsequent slices.
@@ -47,7 +71,7 @@ Fifth slice per `plans/09-v0.0.5-llms-txt.md`. **First file-output slice — ope
 
 - `astro:build:done` hook now load-bearing on the integration. Co-exists with the prior `astro:config:setup` hook; gate on `config.llmsTxt` being set keeps v0.0.3 / v0.0.4 consumer behavior unchanged.
 - README + Quick Start rewritten to reflect v0.0.5 shipped reality. Status line, "What ships" section (six components + one file output), Quick Start config example showing the new `llmsTxt` block (with `body`, `sections`, `deferTo`), "Shipped on" updated to AATT carrying `aiallthethings.com/llms.txt`. Roadmap shifts: v0.0.6 = `agents.md` + `mcp.json`; v0.0.7 = `llms-full.txt`; v0.0.8 = `robots.txt`; v0.1.0 = polish.
-- `src/config.ts` carries `@internal` JSDoc tag — same convention as `utils/json-ld.ts` (added in v0.0.2 review L1) and `components/types.ts` (added in v0.0.3 review L2). Consumers `import type { ... } from '@obaronai/astro-ai-readiness'` (the barrel); deep-importing `/config` will fail with `ERR_PACKAGE_PATH_NOT_EXPORTED`.
+- `src/config.ts` carries `@internal` JSDoc tag — same convention as `utils/json-ld.ts` (added in v0.0.2 review L1) and `components/types.ts` (added in v0.0.3 review L2). Consumers `import type { ... } from '@adkinn/astro-ai-readiness'` (the barrel); deep-importing `/config` will fail with `ERR_PACKAGE_PATH_NOT_EXPORTED`.
 
 ## [0.0.4] — 2026-04-27
 
@@ -57,7 +81,7 @@ Fourth slice per `plans/08-v0.0.4-techarticle.md`. Retires the heavy-props prop 
 
 - `<TechArticleSchema headline description datePublished {...optional} />` — heavy-props Astro component emitting Schema.org `TechArticle` JSON-LD. Required props: `headline`, `description`, `datePublished`. Optional: `dateModified` (defaults to `datePublished`), `author` (D-21 founder fallback when omitted), `image` (string URL or full `ImageObject`), `url` (defaults to canonical `Astro.url + Astro.site`), `articleSection`, `keywords` (string array → comma-joined per Schema.org `Text or Text` convention), `proficiencyLevel`, `dependencies` (string array → comma-joined). `publisher` is an `@id` reference to the site's Organization (entity-graph pattern from v0.0.2).
 - D-21 — `<TechArticleSchema>` `author` defaults to a Person synthesized from `config.organization.founder` (`name` from `founder.name`, `url` from `founder.sameAs[0]` per the existing `OrganizationSchema` convention; no separate `founder.url` field added). Multi-author sites pass an explicit `author` prop per article. Component-level **founder-precondition guard** throws at build time if `author` is omitted AND `founder` is unset — actionable error pointing at the `aiReadiness({...})` config — rather than tightening the global Zod schema (which would break consumers who don't use `<TechArticleSchema>` and don't set `founder`). See `decisions.md` D-21 for the full rationale.
-- `TechArticleAuthor` and `TechArticleImage` TypeScript types added to `./components/types.ts` and re-exported from the package barrel. Consumers `import type { TechArticleAuthor, TechArticleImage } from '@obaronai/astro-ai-readiness/components'`.
+- `TechArticleAuthor` and `TechArticleImage` TypeScript types added to `./components/types.ts` and re-exported from the package barrel. Consumers `import type { TechArticleAuthor, TechArticleImage } from '@adkinn/astro-ai-readiness/components'`.
 
 ### Changed
 
@@ -73,12 +97,12 @@ Third slice per `plans/07-v0.0.3-breadcrumb-faq-techarticle.md`. Retires the ite
 
 - `<BreadcrumbSchema items={[{ name, url }, ...]} />` — items-array Astro component emitting Schema.org `BreadcrumbList` JSON-LD with 1-based `position` numbering and `itemListElement` mapping. Empty-`items` guard suppresses emission entirely.
 - `<FAQPageSchema items={[{ question, answer }, ...]} />` — items-array Astro component emitting Schema.org `FAQPage` JSON-LD with `mainEntity → Question → acceptedAnswer` shape. Empty-`items` guard. Long-form answers escape via the v0.0.2 `jsonLd()` helper (covers `</script>`, U+2028, U+2029 — round-trip clean via `JSON.parse`).
-- `src/components/types.ts` — shared types module exporting `BreadcrumbItem` and `FAQItem`. Lives as `.ts` (not `.astro`) so tsup's `dts: true` ships the declarations; consumers `import type { BreadcrumbItem, FAQItem } from '@obaronai/astro-ai-readiness/components'`.
+- `src/components/types.ts` — shared types module exporting `BreadcrumbItem` and `FAQItem`. Lives as `.ts` (not `.astro`) so tsup's `dts: true` ships the declarations; consumers `import type { BreadcrumbItem, FAQItem } from '@adkinn/astro-ai-readiness/components'`.
 - `dist/components/types.{js,d.ts}` artifacts; tsup entry map updated.
 
 ### Changed
 
-- Vite plugin `name` field renamed from `'@obaronai/astro-ai-readiness:virtual-config'` to `'obaronai-virtual-config'` — matches Vite's single-segment plugin-naming convention. Behavior unchanged. Closes v0.0.2 review Medium #4.
+- Vite plugin `name` field renamed from `'@adkinn/astro-ai-readiness:virtual-config'` to `'ai-readiness-virtual-config'` — matches Vite's single-segment plugin-naming convention. Behavior unchanged. Closes v0.0.2 review Medium #4.
 - `site`, `organization.url`, `organization.logo`, and `founder.sameAs` URLs now require `https://` (or `http://localhost` for dev) via Zod `.refine()`. Throws `URL must use https:// (or http://localhost for dev)` at integration-factory call time on non-conforming input. Closes v0.0.2 review Medium #5.
 - README + Quick Start rewritten to reflect v0.0.3 shipped reality (five components live; TechArticle on roadmap). New Quick Start sections show `<BreadcrumbSchema>` and `<FAQPageSchema>` usage with the items-array pattern and the `BreadcrumbItem` / `FAQItem` interface re-exports. "Shipped on" reflects AATT running five of six components after the install.
 - Component barrel re-exports five components plus `BreadcrumbItem` / `FAQItem` interface types from `./types`.
@@ -114,16 +138,17 @@ First published release. End-to-end tracer slice per `plans/05-e2e-tracer.md`.
 ### Added
 
 - Astro integration `aiReadiness({...})` factory with strict Zod config schema (top-level `.strict()` + nested `organization.strict()`).
-- Vite virtual module `virtual:obaronai-config` exposing the validated config to components at consumer build time.
+- Vite virtual module `virtual:ai-readiness-config` exposing the validated config to components at consumer build time.
 - `<OrganizationSchema />` Astro component — emits canonical Schema.org Organization JSON-LD inline; all data sourced from the `organization` config block; `</script>` escaped via `<` → `<` to prevent parser confusion.
-- Package subpath exports: `@obaronai/astro-ai-readiness` (integration factory) and `@obaronai/astro-ai-readiness/components` (component barrel).
+- Package subpath exports: `@adkinn/astro-ai-readiness` (integration factory) and `@adkinn/astro-ai-readiness/components` (component barrel).
 - TypeScript declarations for `AiReadinessConfig`, `OrganizationConfig`, `FounderConfig`.
 - Build pipeline: tsup (ESM) for `.ts` + `cp` step for `.astro` source files into `dist/components/`.
 
-[Unreleased]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.6...HEAD
-[0.0.6]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.5...v0.0.6
-[0.0.5]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.4...v0.0.5
-[0.0.4]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.3...v0.0.4
-[0.0.3]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.2...v0.0.3
-[0.0.2]: https://github.com/obaronai/astro-ai-readiness/compare/v0.0.1...v0.0.2
-[0.0.1]: https://github.com/obaronai/astro-ai-readiness/releases/tag/v0.0.1
+[Unreleased]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.7...HEAD
+[0.0.7]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.6...v0.0.7
+[0.0.6]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.5...v0.0.6
+[0.0.5]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.4...v0.0.5
+[0.0.4]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.3...v0.0.4
+[0.0.3]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.2...v0.0.3
+[0.0.2]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.1...v0.0.2
+[0.0.1]: https://github.com/adkinn/astro-ai-readiness/releases/tag/v0.0.1

@@ -1,5 +1,5 @@
-import { writeFile } from 'node:fs/promises'
 import type { AiReadinessConfig, AgentsMdConfig } from '../config.js'
+import { writeOutput } from './write-output.js'
 
 /**
  * Pure composer — returns the agents.md content string. Testable without filesystem.
@@ -56,12 +56,5 @@ export async function writeAgentsMd(
     config as AiReadinessConfig & { agentsMd: AgentsMdConfig }
   )
   const target = new URL('agents.md', dir)
-  try {
-    await writeFile(target, content, 'utf-8')
-    logger.info(`wrote agents.md (${content.length} bytes)`)
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err)
-    logger.warn(`failed to write agents.md at ${target.pathname}: ${msg}`)
-    throw err
-  }
+  await writeOutput(target, content, 'agents.md', logger)
 }

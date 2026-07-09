@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing to `@obaronai/astro-ai-readiness`.
+Thanks for your interest in contributing to `@adkinn/astro-ai-readiness`.
 
 ## Status
 
@@ -10,7 +10,7 @@ This package is shipping incrementally toward v0.1.0 (see [README](../README.md)
 
 ### Reporting a bug
 
-[Open an issue](https://github.com/obaronai/astro-ai-readiness/issues/new?template=bug_report.yml) using the bug report template. Please include:
+[Open an issue](https://github.com/adkinn/astro-ai-readiness/issues/new?template=bug_report.yml) using the bug report template. Please include:
 
 - Astro version
 - Toolkit version
@@ -18,7 +18,7 @@ This package is shipping incrementally toward v0.1.0 (see [README](../README.md)
 
 ### Requesting a feature
 
-[Open an issue](https://github.com/obaronai/astro-ai-readiness/issues/new?template=feature_request.yml) using the feature request template. The toolkit's scope is "AI Readiness for Astro sites" — features that fit the rubric (`obaron.ai/methodology`) are most likely to land. Adjacent niceties (Lighthouse tuning, OG image generation, sitemap depth) are out of scope.
+[Open an issue](https://github.com/adkinn/astro-ai-readiness/issues/new?template=feature_request.yml) using the feature request template. The toolkit's scope is "AI Readiness for Astro sites" — generating agent-readable artifacts (llms.txt, agents.md, robots.txt, mcp.json) and JSON-LD helpers at build time. Adjacent niceties (Lighthouse tuning, OG image generation, sitemap depth) are out of scope.
 
 ### Submitting a PR
 
@@ -40,13 +40,13 @@ See the toolkit's design principles in the [README](../README.md#design-principl
 
 ## Scope statement
 
-The toolkit's job is to make Astro sites score well against [Obaron's AI Readiness rubric](https://obaron.ai/methodology). Features that don't trace to a rubric category are likely out of scope; flag them in an issue and we'll discuss.
+The toolkit's job is to make Astro sites agent-readable at build time — emitting llms.txt, llms-full.txt, agents.md, robots.txt, and `.well-known/mcp.json`, plus JSON-LD helper components. Features that don't trace to that job are likely out of scope; flag them in an issue and we'll discuss.
 
-The canonical statement of what's open-source vs. what lives in the closed Obaron product (scoring engine internals, managed services, audit reports) is in the [Obaron org Profile README](https://github.com/obaronai/.github/blob/main/profile/README.md). Read that before proposing scope expansions — it'll save us both a round-trip.
+It composes with the Astro ecosystem rather than replacing it (e.g. it works alongside `@astrojs/sitemap`, never duplicating it). When in doubt about whether something fits, open an issue before building — it'll save us both a round-trip.
 
 ## Voice in issues, PRs, and discussions
 
-We aim for the institutional, specific, no-AI-hype voice the [README](../README.md) and [org Profile README](https://github.com/obaronai/.github/blob/main/profile/README.md) use. Feel free to mirror that tone in PR descriptions, issue comments, and Discussions threads — concrete language ("this is fixed in v0.3.1") over hedged ("should be working now"), thanks-but-no-thanks over apologetic deflection, and no AI-hype copy ("revolutionary", "supercharged", etc.).
+We aim for the institutional, specific, no-AI-hype voice the [README](../README.md) and [org Profile README](https://github.com/adkinn/.github/blob/main/profile/README.md) use. Feel free to mirror that tone in PR descriptions, issue comments, and Discussions threads — concrete language ("this is fixed in v0.3.1") over hedged ("should be working now"), thanks-but-no-thanks over apologetic deflection, and no AI-hype copy ("revolutionary", "supercharged", etc.).
 
 ## License
 

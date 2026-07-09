@@ -1,5 +1,5 @@
-import { writeFile } from 'node:fs/promises'
 import type { AiReadinessConfig, LlmsTxtConfig } from '../config.js'
+import { writeOutput } from './write-output.js'
 
 /**
  * Pure composer — returns the llms.txt content string. Testable without filesystem.
@@ -57,12 +57,5 @@ export async function writeLlmsTxt(
     config as AiReadinessConfig & { llmsTxt: LlmsTxtConfig }
   )
   const target = new URL('llms.txt', dir)
-  try {
-    await writeFile(target, content, 'utf-8')
-    logger.info(`wrote llms.txt (${content.length} bytes)`)
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err)
-    logger.warn(`failed to write llms.txt at ${target.pathname}: ${msg}`)
-    throw err
-  }
+  await writeOutput(target, content, 'llms.txt', logger)
 }

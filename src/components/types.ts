@@ -4,10 +4,10 @@
  *
  * @internal
  *   Consumers should import from the barrel:
- *   `import type { BreadcrumbItem, FAQItem, TechArticleAuthor, TechArticleImage } from '@obaronai/astro-ai-readiness/components'`
+ *   `import type { BreadcrumbItem, FAQItem, TechArticleAuthor, TechArticleImage } from '@adkinn/astro-ai-readiness/components'`
  *   The `/components/types` subpath is intentionally not exposed in
  *   `package.json.exports` — deep-importing
- *   `@obaronai/astro-ai-readiness/components/types` will fail with
+ *   `@adkinn/astro-ai-readiness/components/types` will fail with
  *   `ERR_PACKAGE_PATH_NOT_EXPORTED`. The file ships as a build artifact
  *   so internal relative imports (`./types`) work; the barrel is the
  *   public surface. Same pattern as `src/utils/json-ld.ts`.

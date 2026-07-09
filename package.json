@@ -1,7 +1,7 @@
 {
-  "name": "@obaronai/astro-ai-readiness",
-  "version": "0.0.6",
-  "description": "AI Readiness toolkit for Astro — six JSON-LD components + dist/llms.txt, dist/agents.md, dist/.well-known/mcp.json. dist/llms-full.txt and dist/robots.txt on the roadmap.",
+  "name": "@adkinn/astro-ai-readiness",
+  "version": "0.0.7",
+  "description": "AI Readiness toolkit for Astro — six JSON-LD components plus llms.txt, llms-full.txt, agents.md, robots.txt, and .well-known/mcp.json outputs.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -24,14 +24,15 @@
   "scripts": {
     "build": "tsup && cp src/components/*.astro dist/components/",
     "typecheck": "tsc --noEmit",
-    "test": "echo 'tests not configured yet — stub-failing per repo-management.md hygiene' && exit 1",
-    "lint": "echo 'lint not configured yet — stub-failing per repo-management.md hygiene' && exit 1"
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "lint": "npm run typecheck && npm run build && node scripts/lint-package.mjs"
   },
   "dependencies": {
     "zod": "^3.23.0"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
+    "astro": "^6.1.9",
     "tsup": "^8.3.0",
     "typescript": "^5.6.0"
   },
@@ -52,23 +53,22 @@
   ],
   "author": {
     "name": "Adam Kinney",
-    "email": "hi@obaron.ai",
     "url": "https://adamkinney.com"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/obaronai/astro-ai-readiness.git"
+    "url": "git+https://github.com/adkinn/astro-ai-readiness.git"
   },
-  "homepage": "https://github.com/obaronai/astro-ai-readiness#readme",
+  "homepage": "https://github.com/adkinn/astro-ai-readiness#readme",
   "bugs": {
-    "url": "https://github.com/obaronai/astro-ai-readiness/issues"
+    "url": "https://github.com/adkinn/astro-ai-readiness/issues"
   },
   "peerDependencies": {
     "astro": "^5.0.0 || ^6.0.0"
   },
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=22.12.0"
   },
   "publishConfig": {
     "access": "public"
