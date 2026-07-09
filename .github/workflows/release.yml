@@ -57,6 +57,15 @@ jobs:
             fi
           done
 
-      - run: npm publish --provenance --access public
+      # Idempotent: skip if this version is already on npm, so re-tagging an
+      # already-published version (or re-running the job) never false-fails.
+      - name: Publish to npm (skip if version already published)
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "@adkinn/astro-ai-readiness@${VERSION}" version >/dev/null 2>&1; then
+            echo "@adkinn/astro-ai-readiness@${VERSION} is already published — skipping publish."
+          else
+            npm publish --provenance --access public
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
