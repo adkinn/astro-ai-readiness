@@ -31,7 +31,7 @@ Config validation errors are formatted with one issue per line — `path: messag
 
 ## On the roadmap (toward v0.1.0)
 
-- v0.0.8 — fixture Astro app validation against AATT / adamkinney.com install paths; refine robots presets from real traffic policy.
+- v0.0.8 — fixture Astro app validation against adamkinney.com install paths; refine robots presets from real traffic policy.
 - v0.0.9 — content-collection assisted `llms-full.txt` generation.
 - v0.1.0 — polish, docs, release hardening; full install on adamkinney.com
 
@@ -273,8 +273,7 @@ The v0.1 line is content → artifacts: components and files. Build-time AI-read
 
 ## Shipped on
 
-- [aiallthethings.com](https://aiallthethings.com) — AATT, the toolkit's first reference implementation. Runs all six components on production plus three toolkit-emitted files: `dist/llms.txt` at <https://aiallthethings.com/llms.txt>, `dist/agents.md` at <https://aiallthethings.com/agents.md>, and `dist/.well-known/mcp.json` at <https://aiallthethings.com/.well-known/mcp.json>. Components: Organization + WebSite (site-wide via BaseLayout), CollectionPage (articles + framework + tag indexes), BreadcrumbList (`/about`), FAQPage (articles with FAQ frontmatter), TechArticle (every article-detail page).
-- [adamkinney.com](https://adamkinney.com) — Adam Kinney's site. Next SSR reference-implementation target once v0.1.0 publishes.
+- [adamkinney.com](https://adamkinney.com) — the reference implementation. Runs `OrganizationSchema` + `WebSiteSchema` site-wide and emits `dist/llms.txt` at <https://adamkinney.com/llms.txt> and `dist/agents.md` at <https://adamkinney.com/agents.md>.
 
 ## Contributing
 
