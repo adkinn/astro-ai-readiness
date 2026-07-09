@@ -1,15 +1,16 @@
 # @adkinn/astro-ai-readiness
 
-> AI Readiness toolkit for Astro — seven JSON-LD helper components plus `dist/llms.txt`, `dist/llms-full.txt`, `dist/agents.md`, `dist/robots.txt`, and `dist/.well-known/mcp.json`.
+> AI Readiness toolkit for Astro — eight JSON-LD helper components plus `dist/llms.txt`, `dist/llms-full.txt`, `dist/agents.md`, `dist/robots.txt`, and `dist/.well-known/mcp.json`.
 
-**Status:** v0.0.8 — first-class `Person` identity. Sites whose primary identity is an individual (personal brands, solo builders) can now lead with a `Person` instead of an `Organization`: `organization` is optional, and the `llms.txt` heading + WebSite publisher follow the `person` when set.
+**Status:** v0.0.9 — app/product support. Adds a `<SoftwareApplicationSchema />` component (screenshots, feature list, offers), Organization `description` + `contactPoint`, `founder.url`, WebSite `inLanguage`, and custom `## sections` for `agents.md` — everything an app/product site needs at full fidelity.
 
-## What ships in v0.0.8
+## What ships in v0.0.9
 
-**Seven JSON-LD components**:
-- `<OrganizationSchema />` — Organization block. Config-driven from `organization` (optional); place in your `BaseLayout` so it ships site-wide and the `#organization` `@id` reference resolves on every page. Renders nothing if `organization` is unset.
+**Eight JSON-LD components**:
+- `<OrganizationSchema />` — Organization block. Config-driven from `organization` (optional; now supports `description`, `contactPoint`, and `founder.url`); place in your `BaseLayout` so it ships site-wide and the `#organization` `@id` reference resolves on every page. Renders nothing if `organization` is unset.
 - `<PersonSchema />` — Person block. Config-driven from `person` (optional); for sites whose primary identity is an individual. Place in your `BaseLayout`; declares `#person`, and becomes the WebSite publisher when set. Renders nothing if `person` is unset.
-- `<WebSiteSchema />` — WebSite block. Config-driven; alongside `<OrganizationSchema />` or `<PersonSchema />` in `BaseLayout`.
+- `<SoftwareApplicationSchema />` — SoftwareApplication block. Config-driven from `softwareApplication` (optional); for app/product sites. Emits `#app` with `operatingSystem`, `applicationCategory`, `screenshot[]`, `featureList[]`, `offers[]`, and links `publisher`/`author` to the site's Organization (or Person). Renders nothing if unset.
+- `<WebSiteSchema />` — WebSite block. Config-driven (now supports `inLanguage`); alongside `<OrganizationSchema />` or `<PersonSchema />` in `BaseLayout`.
 - `<CollectionSchema name url description? />` — CollectionPage block. Props-driven; place on collection-index pages (`/articles/`, `/tags/[tag]/`, etc.).
 - `<BreadcrumbSchema items={[{ name, url }, ...]} />` — BreadcrumbList. Items-array prop; place on multi-level pages where the navigation hierarchy isn't already declared inline. Empty `items` skips emission.
 - `<FAQPageSchema items={[{ question, answer }, ...]} />` — FAQPage. Items-array prop; place on pages with FAQ data. Long-form answers escape `</script>` and U+2028 / U+2029 automatically. Empty `items` skips emission.
@@ -18,13 +19,13 @@
 **Five file outputs**:
 - `dist/llms.txt` — [llmstxt.org](https://llmstxt.org/) format from the `llmsTxt` config block. H1 / blockquote summary / optional body / H2 sections with bulleted links / optional canonical-reference footer. Opt-in.
 - `dist/llms-full.txt` — manual full-context markdown from the `llmsFull` config block. This is config-driven in v0.0.7; content-collection introspection is a later layer.
-- `dist/agents.md` — Markdown discovery file for AI-agent crawlers from the `agentsMd` config block. H1 / blockquote description / optional `## Audience`, `## Contact`, `## Links` sections. Opt-in.
+- `dist/agents.md` — Markdown discovery file for AI-agent crawlers from the `agentsMd` config block. H1 / blockquote description / optional `## Audience`, arbitrary `## sections` (title + markdown content), `## Contact`, and `## Links`. Opt-in.
 - `dist/.well-known/mcp.json` — [Model Context Protocol](https://modelcontextprotocol.io/) discovery file from the `mcp` config block. Pretty-printed JSON with `$schema` reference to the toolkit-published v1 shape (per D-22). Supports `status: 'active'` (requires `url` + `tools[]`) and `status: 'planned'` (requires `planned_tools[]`; `url` forbidden by schema). Opt-in.
 - `dist/robots.txt` — robots policy composition from the `robotsTxt` config block. Presets: `search-visible`, `training-opt-out` (default), and `private`; supports explicit bot rules, `Sitemap`, and optional `Content-Signal` directives.
 
 **`@astrojs/sitemap` detection per D-8.** When you call `aiReadiness({...})` and `@astrojs/sitemap` isn't in your integrations list, the toolkit logs a build-time warning. Sitemap is an AI-Readiness baseline; when `robotsTxt` is enabled, the generated `robots.txt` includes a `Sitemap` line by default.
 
-All seven components emit canonical Schema.org JSON-LD with cross-component `@id` references (`#organization`, `#person`, `#website`) so search and AI consumers can resolve the entity graph without redeclaring shared fields.
+All eight components emit canonical Schema.org JSON-LD with cross-component `@id` references (`#organization`, `#person`, `#app`, `#website`) so search and AI consumers can resolve the entity graph without redeclaring shared fields.
 
 URL config fields (`site`, `organization.url`, `organization.logo`, `founder.sameAs`, `llmsTxt.*.url`) require `https://` (or `http://localhost` for dev).
 
@@ -46,7 +47,7 @@ npm install @adkinn/astro-ai-readiness
 
 ## Quick start
 
-Configure (v0.0.8 accepts `site`, optional `person`, optional `organization`, optional `webSite`, optional `llmsTxt`, optional `llmsFull`, optional `agentsMd`, optional `mcp`, and optional `robotsTxt` blocks — provide at least one of `person`/`organization` as the site identity. The Zod schema rejects unknown keys, and URL fields must use `https://` or `http://localhost`):
+Configure (v0.0.9 accepts `site`, optional `person`, optional `organization`, optional `softwareApplication`, optional `webSite`, optional `llmsTxt`, optional `llmsFull`, optional `agentsMd`, optional `mcp`, and optional `robotsTxt` blocks — provide at least one of `person`/`organization` as the site identity. The Zod schema rejects unknown keys, and URL fields must use `https://` or `http://localhost`):
 
 ```ts
 // astro.config.mjs

@@ -29,17 +29,28 @@ const founderSchema = z.object({
   name: z.string().min(1),
   jobTitle: z.string().optional(),
   description: z.string().optional(),
+  url: httpsUrl.optional(),
   sameAs: z.array(httpsUrl).optional(),
 })
+
+// schema.org ContactPoint — support / press contact on the Organization.
+const contactPointSchema = z.object({
+  contactType: z.string().min(1),
+  email: z.string().email().optional(),
+  telephone: z.string().min(1).optional(),
+  url: httpsUrl.optional(),
+}).strict()
 
 const organizationSchema = z.object({
   name: z.string().min(1),
   url: httpsUrl.optional(),
   logo: httpsUrl.optional(),
+  description: z.string().optional(),
   founder: founderSchema.optional(),
   foundingDate: z.string().optional(),
   knowsAbout: z.array(z.string()).optional(),
   areaServed: z.string().optional(),
+  contactPoint: contactPointSchema.optional(),
 }).strict()
 
 // Person — schema.org Person, for sites whose primary identity is an
@@ -57,6 +68,35 @@ const personSchema = z.object({
 const webSiteSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
+  inLanguage: z.string().optional(),
+}).strict()
+
+// schema.org SoftwareApplication — for app / product sites. Publisher and
+// author link to the site's Organization (or Person) automatically.
+const offerSchema = z.object({
+  name: z.string().min(1).optional(),
+  price: z.string().min(1),
+  priceCurrency: z.string().min(1),
+  description: z.string().optional(),
+}).strict()
+
+const softwareApplicationSchema = z.object({
+  name: z.string().min(1),
+  applicationCategory: z.string().optional(),
+  applicationSubCategory: z.string().optional(),
+  operatingSystem: z.string().optional(),
+  description: z.string().optional(),
+  url: httpsUrl.optional(),
+  image: httpsUrl.optional(),
+  screenshot: z.array(httpsUrl).optional(),
+  featureList: z.array(z.string()).optional(),
+  offers: z.array(offerSchema).optional(),
+  installUrl: httpsUrl.optional(),
+  downloadUrl: httpsUrl.optional(),
+  aggregateRating: z.object({
+    ratingValue: z.number(),
+    ratingCount: z.number().int().positive(),
+  }).strict().optional(),
 }).strict()
 
 const llmsTxtLinkSchema = z.object({
@@ -105,12 +145,21 @@ const agentsMdLinkSchema = z.object({
   description: z.string().optional(),
 }).strict()
 
+// Arbitrary H2 section (`## title` + raw-markdown content) for agents.md,
+// beyond the built-in audience/contact/links. Rendered between audience and
+// contact so a site can carry Pricing, Data sources, etc.
+const agentsMdSectionSchema = z.object({
+  title: z.string().min(1),
+  content: z.string().min(1),
+}).strict()
+
 const agentsMdSchema = z.object({
   description: z.string().min(1).refine(
     (s) => !s.includes('\n'),
     { message: 'description must be single-line — use audience/contact fields for additional prose' }
   ),
   audience: z.string().optional(),
+  sections: z.array(agentsMdSectionSchema).min(1).optional(),
   contact: z.string().optional(),
   links: z.array(agentsMdLinkSchema).min(1).optional(),
 }).strict()
@@ -186,6 +235,7 @@ export const aiReadinessConfigSchema = z.object({
   site: httpsUrl,
   organization: organizationSchema.optional(),
   person: personSchema.optional(),
+  softwareApplication: softwareApplicationSchema.optional(),
   webSite: webSiteSchema.optional(),
   llmsTxt: llmsTxtSchema.optional(),
   llmsFull: llmsFullSchema.optional(),
@@ -201,6 +251,8 @@ export type AiReadinessConfig = z.infer<typeof aiReadinessConfigSchema>
 export type OrganizationConfig = z.infer<typeof organizationSchema>
 export type PersonConfig = z.infer<typeof personSchema>
 export type FounderConfig = z.infer<typeof founderSchema>
+export type ContactPointConfig = z.infer<typeof contactPointSchema>
+export type SoftwareApplicationConfig = z.infer<typeof softwareApplicationSchema>
 export type WebSiteConfig = z.infer<typeof webSiteSchema>
 export type LlmsTxtConfig = z.infer<typeof llmsTxtSchema>
 export type LlmsFullConfig = z.infer<typeof llmsFullSchema>

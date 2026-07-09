@@ -12,6 +12,8 @@ export type {
   OrganizationConfig,
   PersonConfig,
   FounderConfig,
+  ContactPointConfig,
+  SoftwareApplicationConfig,
   WebSiteConfig,
   LlmsTxtConfig,
   LlmsFullConfig,

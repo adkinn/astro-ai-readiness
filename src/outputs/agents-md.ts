@@ -27,6 +27,15 @@ export function composeAgentsMd(
     lines.push('')
   }
 
+  if (agentsMd.sections) {
+    for (const section of agentsMd.sections) {
+      lines.push(`## ${section.title}`)
+      lines.push('')
+      lines.push(section.content.trimEnd())
+      lines.push('')
+    }
+  }
+
   if (agentsMd.contact) {
     lines.push('## Contact')
     lines.push('')

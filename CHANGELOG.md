@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.9] — 2026-07-09
+
+Ninth slice: app/product support. Driven by adopting the toolkit on a second, differently-shaped site (an iOS-app marketing site) — which exposed everything the personal-brand shape was missing.
+
+### Added
+
+- `<SoftwareApplicationSchema />` component + optional `softwareApplication` config block: `name`, `applicationCategory`, `applicationSubCategory`, `operatingSystem`, `description`, `url`, `image`, `screenshot[]`, `featureList[]`, `offers[]` (`price`/`priceCurrency`/`name`/`description`), `installUrl`, `downloadUrl`, `aggregateRating`. Emits `@id: <site>#app` and links `publisher`/`author` to the site's Organization (or Person).
+- Organization gains `description` and `contactPoint` (schema.org ContactPoint: `contactType`, `email`, `telephone`, `url`); `founder` gains `url`.
+- WebSite gains `inLanguage`.
+- `agentsMd` gains custom `sections` (`title` + markdown `content`), rendered as `## ` blocks between `## Audience` and `## Contact` — so an agents.md can carry arbitrary sections (Pricing, Data sources, …).
+- `ContactPointConfig` and `SoftwareApplicationConfig` type exports.
+
+### Changed
+
+- Eight JSON-LD components (was seven). `@id` graph now includes `#app`.
+
+Not breaking: all new config fields are optional and additive.
+
 ## [0.0.8] — 2026-07-09
 
 Eighth slice: first-class `Person` identity. Sites whose primary identity is an individual (personal brands, solo builders) can lead with a `Person` instead of an `Organization`.

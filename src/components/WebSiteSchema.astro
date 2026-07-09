@@ -17,5 +17,6 @@ const ws: Record<string, unknown> = {
 }
 
 if (config.webSite?.description) ws.description = config.webSite.description
+if (config.webSite?.inLanguage) ws.inLanguage = config.webSite.inLanguage
 ---
 <script type="application/ld+json" is:inline set:html={jsonLd(ws)}></script>
