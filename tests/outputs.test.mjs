@@ -112,6 +112,41 @@ test('composeAgentsMd emits optional sections only when configured', () => {
   )
 })
 
+test('composeAgentsMd renders custom sections between audience and contact', () => {
+  const content = composeAgentsMd({
+    ...baseConfig,
+    agentsMd: {
+      description: 'Agent operating notes.',
+      audience: 'Estate flippers.',
+      sections: [
+        { title: 'Pricing', content: '- Free download\n- $19.99 one-time' },
+        { title: 'Data sources', content: 'Prices from real sold listings.' },
+      ],
+      contact: 'hi@example.com',
+    },
+  })
+
+  assert.equal(
+    content,
+    '# Example Lab\n\n> Agent operating notes.\n\n## Audience\n\nEstate flippers.\n\n## Pricing\n\n- Free download\n- $19.99 one-time\n\n## Data sources\n\nPrices from real sold listings.\n\n## Contact\n\nhi@example.com\n'
+  )
+})
+
+test('config schema accepts a softwareApplication block with offers', () => {
+  assert.doesNotThrow(() => aiReadinessConfigSchema.parse({
+    site: 'https://example.com',
+    organization: { name: 'Example Lab' },
+    softwareApplication: {
+      name: 'Example App',
+      operatingSystem: 'iOS',
+      applicationCategory: 'UtilitiesApplication',
+      screenshot: ['https://example.com/ss-1.webp'],
+      featureList: ['Does the thing'],
+      offers: [{ name: 'Free', price: '0', priceCurrency: 'USD' }],
+    },
+  }))
+})
+
 test('composeMcpJson emits active and planned server metadata', () => {
   const content = composeMcpJson({
     ...baseConfig,

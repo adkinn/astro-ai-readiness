@@ -18,6 +18,7 @@ if (org) {
 
   if (org.url) orgLd.url = org.url
   if (org.logo) orgLd.logo = org.logo
+  if (org.description) orgLd.description = org.description
   if (org.foundingDate) orgLd.foundingDate = org.foundingDate
   if (org.knowsAbout && org.knowsAbout.length > 0) orgLd.knowsAbout = org.knowsAbout
   if (org.areaServed) orgLd.areaServed = org.areaServed
@@ -29,8 +30,20 @@ if (org) {
     }
     if (org.founder.jobTitle) founder.jobTitle = org.founder.jobTitle
     if (org.founder.description) founder.description = org.founder.description
+    if (org.founder.url) founder.url = org.founder.url
     if (org.founder.sameAs && org.founder.sameAs.length > 0) founder.sameAs = org.founder.sameAs
     orgLd.founder = founder
+  }
+
+  if (org.contactPoint) {
+    const cp: SchemaJson = {
+      '@type': 'ContactPoint',
+      contactType: org.contactPoint.contactType,
+    }
+    if (org.contactPoint.email) cp.email = org.contactPoint.email
+    if (org.contactPoint.telephone) cp.telephone = org.contactPoint.telephone
+    if (org.contactPoint.url) cp.url = org.contactPoint.url
+    orgLd.contactPoint = cp
   }
 }
 ---

@@ -1,0 +1,64 @@
+---
+import { config } from 'virtual:ai-readiness-config'
+import { jsonLd } from '../utils/json-ld'
+
+const app = config.softwareApplication
+
+type SchemaJson = Record<string, unknown>
+
+// Link publisher/author to the site identity (Organization preferred, else Person).
+const identityId = config.organization
+  ? `${config.site}#organization`
+  : config.person
+    ? `${config.site}#person`
+    : null
+
+let appLd: SchemaJson | null = null
+
+if (app) {
+  appLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    '@id': `${config.site}#app`,
+    name: app.name,
+  }
+
+  if (app.applicationCategory) appLd.applicationCategory = app.applicationCategory
+  if (app.applicationSubCategory) appLd.applicationSubCategory = app.applicationSubCategory
+  if (app.operatingSystem) appLd.operatingSystem = app.operatingSystem
+  if (app.description) appLd.description = app.description
+  if (app.url) appLd.url = app.url
+  if (app.image) appLd.image = app.image
+  if (app.screenshot && app.screenshot.length > 0) appLd.screenshot = app.screenshot
+  if (app.featureList && app.featureList.length > 0) appLd.featureList = app.featureList
+  if (app.installUrl) appLd.installUrl = app.installUrl
+  if (app.downloadUrl) appLd.downloadUrl = app.downloadUrl
+
+  if (app.offers && app.offers.length > 0) {
+    appLd.offers = app.offers.map((offer) => {
+      const o: SchemaJson = {
+        '@type': 'Offer',
+        price: offer.price,
+        priceCurrency: offer.priceCurrency,
+      }
+      if (offer.name) o.name = offer.name
+      if (offer.description) o.description = offer.description
+      return o
+    })
+  }
+
+  if (app.aggregateRating) {
+    appLd.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: app.aggregateRating.ratingValue,
+      ratingCount: app.aggregateRating.ratingCount,
+    }
+  }
+
+  if (identityId) {
+    appLd.publisher = { '@id': identityId }
+    appLd.author = { '@id': identityId }
+  }
+}
+---
+{appLd && <script type="application/ld+json" is:inline set:html={jsonLd(appLd)}></script>}
