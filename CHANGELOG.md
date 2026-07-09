@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.8] — 2026-07-09
+
+Eighth slice: first-class `Person` identity. Sites whose primary identity is an individual (personal brands, solo builders) can lead with a `Person` instead of an `Organization`.
+
+### Added
+
+- `<PersonSchema />` component — emits `Person` JSON-LD (`@id: <site>#person`) from the new optional `person` config block (`name`, `url`, `jobTitle`, `description`, `image`, `sameAs`, `knowsAbout`). Renders nothing when `person` is unset.
+- `PersonConfig` type export from the package barrel.
+
+### Changed
+
+- `organization` is now **optional**. The config requires at least one of `person`/`organization` (Zod refine) so there's always an identity for the file-output headings and JSON-LD.
+- Site-identity resolution across `llms.txt`, `llms-full.txt`, `agents.md`, and the `WebSite` publisher now follows `person` → `organization` → `webSite.name` → `site`, so person-first sites lead with the person and publish as the person.
+- `<OrganizationSchema />` renders nothing when `organization` is unset (previously assumed present).
+
+Not breaking for existing org-configured sites: `organization` still parses and behaves as before.
+
 ## [0.0.7] — 2026-07-08
 
 Seventh slice: closes the inert-config gap and makes the v0.1 file-output set real. `llmsFull` and `robotsTxt` are now typed config blocks with build-time outputs instead of `z.unknown()` placeholders.

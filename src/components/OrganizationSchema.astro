@@ -6,28 +6,32 @@ const org = config.organization
 
 type SchemaJson = Record<string, unknown>
 
-const orgLd: SchemaJson = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  '@id': `${config.site}#organization`,
-  name: org.name,
-}
+let orgLd: SchemaJson | null = null
 
-if (org.url) orgLd.url = org.url
-if (org.logo) orgLd.logo = org.logo
-if (org.foundingDate) orgLd.foundingDate = org.foundingDate
-if (org.knowsAbout && org.knowsAbout.length > 0) orgLd.knowsAbout = org.knowsAbout
-if (org.areaServed) orgLd.areaServed = org.areaServed
-
-if (org.founder) {
-  const founder: SchemaJson = {
-    '@type': 'Person',
-    name: org.founder.name,
+if (org) {
+  orgLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${config.site}#organization`,
+    name: org.name,
   }
-  if (org.founder.jobTitle) founder.jobTitle = org.founder.jobTitle
-  if (org.founder.description) founder.description = org.founder.description
-  if (org.founder.sameAs && org.founder.sameAs.length > 0) founder.sameAs = org.founder.sameAs
-  orgLd.founder = founder
+
+  if (org.url) orgLd.url = org.url
+  if (org.logo) orgLd.logo = org.logo
+  if (org.foundingDate) orgLd.foundingDate = org.foundingDate
+  if (org.knowsAbout && org.knowsAbout.length > 0) orgLd.knowsAbout = org.knowsAbout
+  if (org.areaServed) orgLd.areaServed = org.areaServed
+
+  if (org.founder) {
+    const founder: SchemaJson = {
+      '@type': 'Person',
+      name: org.founder.name,
+    }
+    if (org.founder.jobTitle) founder.jobTitle = org.founder.jobTitle
+    if (org.founder.description) founder.description = org.founder.description
+    if (org.founder.sameAs && org.founder.sameAs.length > 0) founder.sameAs = org.founder.sameAs
+    orgLd.founder = founder
+  }
 }
 ---
-<script type="application/ld+json" is:inline set:html={jsonLd(orgLd)}></script>
+{orgLd && <script type="application/ld+json" is:inline set:html={jsonLd(orgLd)}></script>}

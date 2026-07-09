@@ -1,14 +1,15 @@
 # @adkinn/astro-ai-readiness
 
-> AI Readiness toolkit for Astro — six JSON-LD helper components plus `dist/llms.txt`, `dist/llms-full.txt`, `dist/agents.md`, `dist/robots.txt`, and `dist/.well-known/mcp.json`.
+> AI Readiness toolkit for Astro — seven JSON-LD helper components plus `dist/llms.txt`, `dist/llms-full.txt`, `dist/agents.md`, `dist/robots.txt`, and `dist/.well-known/mcp.json`.
 
-**Status:** v0.0.7 — seventh slice in prep. **Component sub-line complete (6 of 6); five of five v0.1 file outputs live.** Multi-output orchestration on the `astro:build:done` hook now covers the full v0.1 artifact set.
+**Status:** v0.0.8 — first-class `Person` identity. Sites whose primary identity is an individual (personal brands, solo builders) can now lead with a `Person` instead of an `Organization`: `organization` is optional, and the `llms.txt` heading + WebSite publisher follow the `person` when set.
 
-## What ships in v0.0.7
+## What ships in v0.0.8
 
-**Six JSON-LD components** (component sub-line complete):
-- `<OrganizationSchema />` — Organization block. Config-driven; place in your `BaseLayout` so it ships site-wide and the `#organization` `@id` reference resolves on every page.
-- `<WebSiteSchema />` — WebSite block. Config-driven; alongside `<OrganizationSchema />` in `BaseLayout`.
+**Seven JSON-LD components**:
+- `<OrganizationSchema />` — Organization block. Config-driven from `organization` (optional); place in your `BaseLayout` so it ships site-wide and the `#organization` `@id` reference resolves on every page. Renders nothing if `organization` is unset.
+- `<PersonSchema />` — Person block. Config-driven from `person` (optional); for sites whose primary identity is an individual. Place in your `BaseLayout`; declares `#person`, and becomes the WebSite publisher when set. Renders nothing if `person` is unset.
+- `<WebSiteSchema />` — WebSite block. Config-driven; alongside `<OrganizationSchema />` or `<PersonSchema />` in `BaseLayout`.
 - `<CollectionSchema name url description? />` — CollectionPage block. Props-driven; place on collection-index pages (`/articles/`, `/tags/[tag]/`, etc.).
 - `<BreadcrumbSchema items={[{ name, url }, ...]} />` — BreadcrumbList. Items-array prop; place on multi-level pages where the navigation hierarchy isn't already declared inline. Empty `items` skips emission.
 - `<FAQPageSchema items={[{ question, answer }, ...]} />` — FAQPage. Items-array prop; place on pages with FAQ data. Long-form answers escape `</script>` and U+2028 / U+2029 automatically. Empty `items` skips emission.
@@ -23,7 +24,7 @@
 
 **`@astrojs/sitemap` detection per D-8.** When you call `aiReadiness({...})` and `@astrojs/sitemap` isn't in your integrations list, the toolkit logs a build-time warning. Sitemap is an AI-Readiness baseline; when `robotsTxt` is enabled, the generated `robots.txt` includes a `Sitemap` line by default.
 
-All six components emit canonical Schema.org JSON-LD with cross-component `@id` references (`#organization`, `#website`) so search and AI consumers can resolve the entity graph without redeclaring shared fields.
+All seven components emit canonical Schema.org JSON-LD with cross-component `@id` references (`#organization`, `#person`, `#website`) so search and AI consumers can resolve the entity graph without redeclaring shared fields.
 
 URL config fields (`site`, `organization.url`, `organization.logo`, `founder.sameAs`, `llmsTxt.*.url`) require `https://` (or `http://localhost` for dev).
 
@@ -45,7 +46,7 @@ npm install @adkinn/astro-ai-readiness
 
 ## Quick start
 
-Configure (v0.0.7 accepts `site`, `organization`, optional `webSite`, optional `llmsTxt`, optional `llmsFull`, optional `agentsMd`, optional `mcp`, and optional `robotsTxt` blocks — the Zod schema rejects unknown keys, and URL fields must use `https://` or `http://localhost`):
+Configure (v0.0.8 accepts `site`, optional `person`, optional `organization`, optional `webSite`, optional `llmsTxt`, optional `llmsFull`, optional `agentsMd`, optional `mcp`, and optional `robotsTxt` blocks — provide at least one of `person`/`organization` as the site identity. The Zod schema rejects unknown keys, and URL fields must use `https://` or `http://localhost`):
 
 ```ts
 // astro.config.mjs
@@ -185,7 +186,22 @@ import { OrganizationSchema, WebSiteSchema } from '@adkinn/astro-ai-readiness/co
 </head>
 ```
 
-`<OrganizationSchema />` declares `@id: '<site>#organization'`; `<WebSiteSchema />` references it. Order matters in the head — Organization first.
+`<OrganizationSchema />` declares `@id: '<site>#organization'`; `<WebSiteSchema />` references it. Order matters in the head — identity component first.
+
+**Personal-brand sites** lead with a `Person` instead. Configure a `person` block (and omit `organization` if you don't need it), then:
+
+```astro
+---
+// src/layouts/BaseLayout.astro — site-wide
+import { PersonSchema, WebSiteSchema } from '@adkinn/astro-ai-readiness/components'
+---
+<head>
+  <PersonSchema />
+  <WebSiteSchema />
+</head>
+```
+
+`<PersonSchema />` declares `@id: '<site>#person'`; when `person` is set, `<WebSiteSchema />` publisher and the `llms.txt` heading follow it.
 
 ```astro
 ---

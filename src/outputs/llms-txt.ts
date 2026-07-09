@@ -11,10 +11,12 @@ import { writeOutput } from './write-output.js'
 export function composeLlmsTxt(
   config: AiReadinessConfig & { llmsTxt: LlmsTxtConfig }
 ): string {
-  const { llmsTxt, organization } = config
+  const { llmsTxt } = config
+  // Identity heading: a person-first site leads with the person; else the org.
+  const name = config.person?.name ?? config.organization?.name ?? config.webSite?.name ?? config.site
   const lines: string[] = []
 
-  lines.push(`# ${organization.name}`)
+  lines.push(`# ${name}`)
   lines.push('')
 
   lines.push(`> ${llmsTxt.summary}`)

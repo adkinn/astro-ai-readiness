@@ -10,6 +10,7 @@ import { writeRobotsTxt } from './outputs/robots-txt.js'
 export type {
   AiReadinessConfig,
   OrganizationConfig,
+  PersonConfig,
   FounderConfig,
   WebSiteConfig,
   LlmsTxtConfig,

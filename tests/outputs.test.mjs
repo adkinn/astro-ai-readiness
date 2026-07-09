@@ -52,6 +52,30 @@ test('composeLlmsTxt emits the llms.txt shape with a trailing newline', () => {
   )
 })
 
+test('composeLlmsTxt leads with person.name for a person-first site (no org)', () => {
+  const content = composeLlmsTxt({
+    site: 'https://example.com',
+    person: { name: 'Ada Example', url: 'https://example.com' },
+    llmsTxt: { summary: 'A person, building in public.' },
+  })
+  assert.match(content, /^# Ada Example\n/)
+})
+
+test('config schema requires a person or an organization', () => {
+  assert.throws(
+    () => aiReadinessConfigSchema.parse({
+      site: 'https://example.com',
+      llmsTxt: { summary: 'no identity' },
+    }),
+    /person.*organization/i
+  )
+  // person-only is valid
+  assert.doesNotThrow(() => aiReadinessConfigSchema.parse({
+    site: 'https://example.com',
+    person: { name: 'Ada Example' },
+  }))
+})
+
 test('composeLlmsFullTxt emits manual full-context content', () => {
   const content = composeLlmsFullTxt({
     ...baseConfig,

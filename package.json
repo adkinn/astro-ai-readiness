@@ -1,6 +1,6 @@
 {
   "name": "@adkinn/astro-ai-readiness",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "AI Readiness toolkit for Astro — six JSON-LD components plus llms.txt, llms-full.txt, agents.md, robots.txt, and .well-known/mcp.json outputs.",
   "type": "module",
   "main": "./dist/index.js",
