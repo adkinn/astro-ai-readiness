@@ -1,6 +1,6 @@
 # Maintainer setup
 
-GitHub-UI / npm-web actions needed to complete the Foundation tier of [`obaron/brand/gh-org/repo-management.md`](https://github.com/obaronai/.github/) for this repo. None of these are checkable into git — they live in repo settings, npm settings, or GitHub Actions secrets. This file is the durable list so it isn't just chat history.
+GitHub-UI / npm-web actions needed to complete the Foundation tier of [`obaron/brand/gh-org/repo-management.md`](https://github.com/adkinn/.github/) for this repo. None of these are checkable into git — they live in repo settings, npm settings, or GitHub Actions secrets. This file is the durable list so it isn't just chat history.
 
 Run order matters: items 1–4 first (everything else waits on them), then 5–6 once CI has run at least once.
 
@@ -89,7 +89,7 @@ Until this lands, `release.yml` will checkout-build-verify cleanly but fail at t
 
 ## 6. Branch protection on `main` — with a sub-decision
 
-The playbook spec ([`obaron/brand/gh-org/repo-management.md`](https://github.com/obaronai/.github/) lines 70–84) wants the full set:
+The playbook spec ([`obaron/brand/gh-org/repo-management.md`](https://github.com/adkinn/.github/) lines 70–84) wants the full set:
 
 - ✅ Require a pull request before merging
 - ✅ Require status checks to pass before merging

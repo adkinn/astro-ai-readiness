@@ -17,8 +17,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          # active LTS at publish time — bump when the policy in
-          # obaron/brand/gh-org/repo-management.md updates
+          # active LTS at publish time — bump when Node's LTS line advances
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
@@ -34,10 +33,12 @@ jobs:
             exit 1
           fi
 
-      # Note: lint + test are stub-failing in package.json until vitest +
-      # eslint land. Once real, re-add them here so a tag-on-broken-commit
-      # can't ship to npm. Until then, typecheck + build are the rope-line.
+      # Full gate before publish — a tag on a broken commit can't ship to npm.
+      - run: npm run lint
+
       - run: npm run typecheck
+
+      - run: npm test
 
       - run: npm run build
 

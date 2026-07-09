@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/obaronai/astro-ai-readiness/v0.0.6/schemas/mcp/v1.json",
-  "title": "Obaron MCP Discovery v1",
-  "description": "Discovery file shape emitted by @obaronai/astro-ai-readiness for /.well-known/mcp.json. Per D-22, includes a toolkit-specific status: 'active' | 'planned' field gating tools (active) vs planned_tools (planned).",
+  "$id": "https://raw.githubusercontent.com/adkinn/astro-ai-readiness/v0.0.7/schemas/mcp/v1.json",
+  "title": "astro-ai-readiness MCP Discovery v1",
+  "description": "Discovery file shape emitted by @adkinn/astro-ai-readiness for /.well-known/mcp.json. Per D-22, includes a toolkit-specific status: 'active' | 'planned' field gating tools (active) vs planned_tools (planned).",
   "type": "object",
   "required": ["version", "servers"],
   "additionalProperties": false,

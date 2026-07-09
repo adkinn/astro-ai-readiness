@@ -2,8 +2,10 @@ import type { AstroIntegration } from 'astro'
 import { ZodError } from 'zod'
 import { aiReadinessConfigSchema, type AiReadinessConfig } from './config.js'
 import { writeLlmsTxt } from './outputs/llms-txt.js'
+import { writeLlmsFullTxt } from './outputs/llms-full.js'
 import { writeAgentsMd } from './outputs/agents-md.js'
 import { writeMcpJson } from './outputs/mcp-json.js'
+import { writeRobotsTxt } from './outputs/robots-txt.js'
 
 export type {
   AiReadinessConfig,
@@ -11,11 +13,13 @@ export type {
   FounderConfig,
   WebSiteConfig,
   LlmsTxtConfig,
+  LlmsFullConfig,
   AgentsMdConfig,
   McpConfig,
+  RobotsTxtConfig,
 } from './config.js'
 
-const VIRTUAL_ID = 'virtual:obaronai-config'
+const VIRTUAL_ID = 'virtual:ai-readiness-config'
 const RESOLVED_VIRTUAL_ID = '\0' + VIRTUAL_ID
 
 /**
@@ -46,14 +50,14 @@ export default function aiReadiness(options: AiReadinessConfig): AstroIntegratio
   const serialized = JSON.stringify(config)
 
   return {
-    name: '@obaronai/astro-ai-readiness',
+    name: '@adkinn/astro-ai-readiness',
     hooks: {
       'astro:config:setup': ({ updateConfig, logger, config: astroConfig }) => {
         updateConfig({
           vite: {
             plugins: [
               {
-                name: 'obaronai-virtual-config',
+                name: 'ai-readiness-virtual-config',
                 resolveId(id: string) {
                   if (id === VIRTUAL_ID) return RESOLVED_VIRTUAL_ID
                   return null
@@ -92,13 +96,18 @@ export default function aiReadiness(options: AiReadinessConfig): AstroIntegratio
         if (config.llmsTxt) {
           await writeLlmsTxt(config, dir, logger)
         }
+        if (config.llmsFull) {
+          await writeLlmsFullTxt(config, dir, logger)
+        }
         if (config.agentsMd) {
           await writeAgentsMd(config, dir, logger)
         }
         if (config.mcp) {
           await writeMcpJson(config, dir, logger)
         }
-        // Future outputs (llms-full.txt, robots.txt) wire here.
+        if (config.robotsTxt) {
+          await writeRobotsTxt(config, dir, logger)
+        }
       },
     },
   }
