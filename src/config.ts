@@ -42,6 +42,18 @@ const organizationSchema = z.object({
   areaServed: z.string().optional(),
 }).strict()
 
+// Person — schema.org Person, for sites whose primary identity is an
+// individual (personal brands, solo builders) rather than an organization.
+const personSchema = z.object({
+  name: z.string().min(1),
+  url: httpsUrl.optional(),
+  jobTitle: z.string().optional(),
+  description: z.string().optional(),
+  image: httpsUrl.optional(),
+  sameAs: z.array(httpsUrl).optional(),
+  knowsAbout: z.array(z.string()).optional(),
+}).strict()
+
 const webSiteSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
@@ -172,17 +184,22 @@ const robotsTxtSchema = z.object({
 
 export const aiReadinessConfigSchema = z.object({
   site: httpsUrl,
-  organization: organizationSchema,
+  organization: organizationSchema.optional(),
+  person: personSchema.optional(),
   webSite: webSiteSchema.optional(),
   llmsTxt: llmsTxtSchema.optional(),
   llmsFull: llmsFullSchema.optional(),
   agentsMd: agentsMdSchema.optional(),
   mcp: mcpSchema.optional(),
   robotsTxt: robotsTxtSchema.optional(),
-}).strict()
+}).strict().refine(
+  (value) => Boolean(value.person || value.organization),
+  { message: 'Provide `person` and/or `organization` — the site needs at least one identity for the llms.txt heading and JSON-LD.' }
+)
 
 export type AiReadinessConfig = z.infer<typeof aiReadinessConfigSchema>
 export type OrganizationConfig = z.infer<typeof organizationSchema>
+export type PersonConfig = z.infer<typeof personSchema>
 export type FounderConfig = z.infer<typeof founderSchema>
 export type WebSiteConfig = z.infer<typeof webSiteSchema>
 export type LlmsTxtConfig = z.infer<typeof llmsTxtSchema>

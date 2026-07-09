@@ -11,10 +11,11 @@ import { writeOutput } from './write-output.js'
 export function composeAgentsMd(
   config: AiReadinessConfig & { agentsMd: AgentsMdConfig }
 ): string {
-  const { agentsMd, organization } = config
+  const { agentsMd } = config
+  const name = config.person?.name ?? config.organization?.name ?? config.webSite?.name ?? config.site
   const lines: string[] = []
 
-  lines.push(`# ${organization.name}`)
+  lines.push(`# ${name}`)
   lines.push('')
   lines.push(`> ${agentsMd.description}`)
   lines.push('')

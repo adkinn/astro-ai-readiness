@@ -1,0 +1,26 @@
+---
+import { config } from 'virtual:ai-readiness-config'
+import { jsonLd } from '../utils/json-ld'
+
+const person = config.person
+
+type SchemaJson = Record<string, unknown>
+
+let personLd: SchemaJson | null = null
+
+if (person) {
+  personLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': `${config.site}#person`,
+    name: person.name,
+  }
+  if (person.url) personLd.url = person.url
+  if (person.jobTitle) personLd.jobTitle = person.jobTitle
+  if (person.description) personLd.description = person.description
+  if (person.image) personLd.image = person.image
+  if (person.sameAs && person.sameAs.length > 0) personLd.sameAs = person.sameAs
+  if (person.knowsAbout && person.knowsAbout.length > 0) personLd.knowsAbout = person.knowsAbout
+}
+---
+{personLd && <script type="application/ld+json" is:inline set:html={jsonLd(personLd)}></script>}

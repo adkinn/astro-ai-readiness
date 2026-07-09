@@ -50,7 +50,8 @@ jobs:
         run: |
           for f in dist/index.js dist/index.d.ts \
                    dist/components/index.js dist/components/index.d.ts \
-                   dist/components/OrganizationSchema.astro; do
+                   dist/components/OrganizationSchema.astro \
+                   dist/components/PersonSchema.astro; do
             if [ ! -s "$f" ]; then
               echo "::error::expected build artifact missing or empty: $f"
               exit 1

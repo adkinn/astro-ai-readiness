@@ -10,10 +10,11 @@ import { writeOutput } from './write-output.js'
 export function composeLlmsFullTxt(
   config: AiReadinessConfig & { llmsFull: LlmsFullConfig }
 ): string {
-  const { llmsFull, llmsTxt, organization } = config
+  const { llmsFull, llmsTxt } = config
+  const name = llmsFull.title ?? config.person?.name ?? config.organization?.name ?? config.site
   const lines: string[] = []
 
-  lines.push(`# ${llmsFull.title ?? organization.name}`)
+  lines.push(`# ${name}`)
   lines.push('')
 
   const summary = llmsFull.summary ?? llmsTxt?.summary
