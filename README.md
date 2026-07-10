@@ -31,14 +31,6 @@ URL config fields (`site`, `organization.url`, `organization.logo`, `founder.sam
 
 Config validation errors are formatted with one issue per line — `path: message` per Zod issue — instead of the default `ZodError` JSON blob.
 
-## On the roadmap (toward v0.1.0)
-
-- v0.0.8 — fixture Astro app validation against adamkinney.com install paths; refine robots presets from real traffic policy.
-- v0.0.9 — content-collection assisted `llms-full.txt` generation.
-- v0.1.0 — polish, docs, release hardening; full install on adamkinney.com
-
-Track progress: <https://github.com/adkinn/astro-ai-readiness/milestones>
-
 ## Install
 
 ```bash
@@ -292,6 +284,7 @@ The v0.1 line is content → artifacts: components and files. Build-time AI-read
 
 - [adamkinney.com](https://adamkinney.com) — the personal-brand reference implementation. Person-first: runs `PersonSchema` + `WebSiteSchema` site-wide and emits `dist/llms.txt` at <https://adamkinney.com/llms.txt> and `dist/agents.md` at <https://adamkinney.com/agents.md>.
 - [comicscry.com](https://comicscry.com) — the app/product reference implementation (Astro 6 SSR, `@astrojs/cloudflare`). Runs `OrganizationSchema` + `WebSiteSchema` site-wide and `SoftwareApplicationSchema` + `FAQPageSchema` on the homepage, and emits `dist/llms.txt`, `dist/agents.md`, and `dist/robots.txt`. Drove the app/product features in v0.0.9–v0.0.10.
+- [gurn.app](https://gurn.app) — the game reference implementation (Astro 6 SSR, `@astrojs/cloudflare`). Runs `OrganizationSchema` + `WebSiteSchema` site-wide and `SoftwareApplicationSchema` (as a `VideoGame`) + `FAQPageSchema` on the homepage, and emits `dist/llms.txt` + `dist/robots.txt`. Drove `VideoGame` / `gamePlatform` support in v0.0.11.
 
 ## Contributing
 
