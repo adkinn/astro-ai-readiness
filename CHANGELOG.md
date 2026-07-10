@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.10] — 2026-07-10
+
+Organization `sameAs` — surfaced immediately by adopting the toolkit on a second site whose Organization links out to six social profiles. The `founder` and `person` had `sameAs`; the Organization didn't.
+
+### Added
+
+- Organization `sameAs` (array of https URLs), emitted in `<OrganizationSchema />` — links the Organization to its social/canonical profiles.
+
 ## [0.0.9] — 2026-07-09
 
 Ninth slice: app/product support. Driven by adopting the toolkit on a second, differently-shaped site (an iOS-app marketing site) — which exposed everything the personal-brand shape was missing.

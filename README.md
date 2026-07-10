@@ -2,9 +2,9 @@
 
 > AI Readiness toolkit for Astro — eight JSON-LD helper components plus `dist/llms.txt`, `dist/llms-full.txt`, `dist/agents.md`, `dist/robots.txt`, and `dist/.well-known/mcp.json`.
 
-**Status:** v0.0.9 — app/product support. Adds a `<SoftwareApplicationSchema />` component (screenshots, feature list, offers), Organization `description` + `contactPoint`, `founder.url`, WebSite `inLanguage`, and custom `## sections` for `agents.md` — everything an app/product site needs at full fidelity.
+**Status:** v0.0.10 — app/product support. A `<SoftwareApplicationSchema />` component (screenshots, feature list, offers), Organization `description` + `sameAs` + `contactPoint`, `founder.url`, WebSite `inLanguage`, and custom `## sections` for `agents.md` — everything an app/product site needs at full fidelity, proven on a real one.
 
-## What ships in v0.0.9
+## What ships in v0.0.10
 
 **Eight JSON-LD components**:
 - `<OrganizationSchema />` — Organization block. Config-driven from `organization` (optional; now supports `description`, `contactPoint`, and `founder.url`); place in your `BaseLayout` so it ships site-wide and the `#organization` `@id` reference resolves on every page. Renders nothing if `organization` is unset.
@@ -290,7 +290,8 @@ The v0.1 line is content → artifacts: components and files. Build-time AI-read
 
 ## Shipped on
 
-- [adamkinney.com](https://adamkinney.com) — the reference implementation. Runs `OrganizationSchema` + `WebSiteSchema` site-wide and emits `dist/llms.txt` at <https://adamkinney.com/llms.txt> and `dist/agents.md` at <https://adamkinney.com/agents.md>.
+- [adamkinney.com](https://adamkinney.com) — the personal-brand reference implementation. Person-first: runs `PersonSchema` + `WebSiteSchema` site-wide and emits `dist/llms.txt` at <https://adamkinney.com/llms.txt> and `dist/agents.md` at <https://adamkinney.com/agents.md>.
+- [comicscry.com](https://comicscry.com) — the app/product reference implementation (Astro 6 SSR, `@astrojs/cloudflare`). Runs `OrganizationSchema` + `WebSiteSchema` site-wide and `SoftwareApplicationSchema` + `FAQPageSchema` on the homepage, and emits `dist/llms.txt`, `dist/agents.md`, and `dist/robots.txt`. Drove the app/product features in v0.0.9–v0.0.10.
 
 ## Contributing
 

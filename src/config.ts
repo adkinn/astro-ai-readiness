@@ -46,6 +46,7 @@ const organizationSchema = z.object({
   url: httpsUrl.optional(),
   logo: httpsUrl.optional(),
   description: z.string().optional(),
+  sameAs: z.array(httpsUrl).optional(),
   founder: founderSchema.optional(),
   foundingDate: z.string().optional(),
   knowsAbout: z.array(z.string()).optional(),
