@@ -18,7 +18,7 @@ let appLd: SchemaJson | null = null
 if (app) {
   appLd = {
     '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
+    '@type': app.type ?? 'SoftwareApplication',
     '@id': `${config.site}#app`,
     name: app.name,
   }
@@ -26,6 +26,7 @@ if (app) {
   if (app.applicationCategory) appLd.applicationCategory = app.applicationCategory
   if (app.applicationSubCategory) appLd.applicationSubCategory = app.applicationSubCategory
   if (app.operatingSystem) appLd.operatingSystem = app.operatingSystem
+  if (app.gamePlatform) appLd.gamePlatform = app.gamePlatform
   if (app.description) appLd.description = app.description
   if (app.url) appLd.url = app.url
   if (app.image) appLd.image = app.image
