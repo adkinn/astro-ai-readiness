@@ -147,6 +147,26 @@ test('config schema accepts a softwareApplication block with offers', () => {
   }))
 })
 
+test('config schema accepts a VideoGame type with gamePlatform', () => {
+  assert.doesNotThrow(() => aiReadinessConfigSchema.parse({
+    site: 'https://example.com',
+    person: { name: 'Example Dev' },
+    softwareApplication: {
+      name: 'Example Game',
+      type: 'VideoGame',
+      applicationCategory: 'GameApplication',
+      operatingSystem: 'iOS',
+      gamePlatform: 'iPhone',
+      offers: [{ price: '0', priceCurrency: 'USD' }],
+    },
+  }))
+  assert.throws(() => aiReadinessConfigSchema.parse({
+    site: 'https://example.com',
+    person: { name: 'Example Dev' },
+    softwareApplication: { name: 'X', type: 'NotAType' },
+  }))
+})
+
 test('composeMcpJson emits active and planned server metadata', () => {
   const content = composeMcpJson({
     ...baseConfig,

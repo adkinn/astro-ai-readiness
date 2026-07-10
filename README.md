@@ -2,9 +2,9 @@
 
 > AI Readiness toolkit for Astro — eight JSON-LD helper components plus `dist/llms.txt`, `dist/llms-full.txt`, `dist/agents.md`, `dist/robots.txt`, and `dist/.well-known/mcp.json`.
 
-**Status:** v0.0.10 — app/product support. A `<SoftwareApplicationSchema />` component (screenshots, feature list, offers), Organization `description` + `sameAs` + `contactPoint`, `founder.url`, WebSite `inLanguage`, and custom `## sections` for `agents.md` — everything an app/product site needs at full fidelity, proven on a real one.
+**Status:** v0.0.11 — app / product / game support. `<SoftwareApplicationSchema />` (screenshots, feature list, offers, and a `type` for `VideoGame` / `MobileApplication` / `WebApplication` + `gamePlatform`), Organization `description` + `sameAs` + `contactPoint`, `founder.url`, WebSite `inLanguage`, and custom `## sections` for `agents.md` — proven on three real sites (a person, an app, a game).
 
-## What ships in v0.0.10
+## What ships in v0.0.11
 
 **Eight JSON-LD components**:
 - `<OrganizationSchema />` — Organization block. Config-driven from `organization` (optional; now supports `description`, `contactPoint`, and `founder.url`); place in your `BaseLayout` so it ships site-wide and the `#organization` `@id` reference resolves on every page. Renders nothing if `organization` is unset.

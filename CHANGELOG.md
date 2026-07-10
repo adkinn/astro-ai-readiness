@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.11] — 2026-07-10
+
+Games. Surfaced by adopting the toolkit on a third site — a face-controlled iOS game whose schema is a `VideoGame`, not a plain `SoftwareApplication`.
+
+### Added
+
+- `softwareApplication.type` — `'SoftwareApplication'` (default) | `'VideoGame'` | `'MobileApplication'` | `'WebApplication'`; sets the emitted `@type`.
+- `softwareApplication.gamePlatform` (string or string[]) — emitted for games (e.g. `'iPhone'`).
+
 ## [0.0.10] — 2026-07-10
 
 Organization `sameAs` — surfaced immediately by adopting the toolkit on a second site whose Organization links out to six social profiles. The `founder` and `person` had `sameAs`; the Organization didn't.

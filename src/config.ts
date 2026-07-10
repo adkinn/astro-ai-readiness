@@ -83,9 +83,14 @@ const offerSchema = z.object({
 
 const softwareApplicationSchema = z.object({
   name: z.string().min(1),
+  // schema.org @type — VideoGame / MobileApplication / WebApplication are
+  // subtypes of SoftwareApplication, more accurate for games and mobile/web
+  // apps. Defaults to 'SoftwareApplication'.
+  type: z.enum(['SoftwareApplication', 'VideoGame', 'MobileApplication', 'WebApplication']).optional(),
   applicationCategory: z.string().optional(),
   applicationSubCategory: z.string().optional(),
   operatingSystem: z.string().optional(),
+  gamePlatform: z.union([z.string().min(1), z.array(z.string().min(1)).min(1)]).optional(),
   description: z.string().optional(),
   url: httpsUrl.optional(),
   image: httpsUrl.optional(),
