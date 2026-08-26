@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.13] — 2026-08-26
+
+Contact address only — no code, no API change.
+
+### Changed
+
+- Public contact for the package is now `npm@adamkinney.com`, a dedicated address for open-source traffic rather than a personal inbox. `package.json` gains an `author.email` (it had a name and URL but no address, so npm showed no way to reach the maintainer), and the Code of Conduct reporting address moves off `adam@adamkinney.com`.
+
 ## [0.0.12] — 2026-08-26
 
 Docs only — no code, no API change. Two things in the published tarball had stopped being true.
@@ -209,7 +217,8 @@ First published release. End-to-end tracer slice per `plans/05-e2e-tracer.md`.
 - TypeScript declarations for `AiReadinessConfig`, `OrganizationConfig`, `FounderConfig`.
 - Build pipeline: tsup (ESM) for `.ts` + `cp` step for `.astro` source files into `dist/components/`.
 
-[Unreleased]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.12...HEAD
+[Unreleased]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.13...HEAD
+[0.0.13]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.12...v0.0.13
 [0.0.12]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.11...v0.0.12
 [0.0.11]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.10...v0.0.11
 [0.0.10]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.9...v0.0.10
