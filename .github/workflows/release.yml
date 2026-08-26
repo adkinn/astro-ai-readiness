@@ -13,14 +13,20 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          # active LTS at publish time — bump when Node's LTS line advances
-          node-version: 22
+          # Trusted publishing needs Node >= 22.14 and npm >= 11.5.1. Node 24
+          # bundles npm 11.x; the explicit upgrade below removes any doubt.
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
-          cache: 'npm'
+          # No dependency cache in a release build — the tarball that gets
+          # signed should be built from a clean install, not a restored one.
+          package-manager-cache: false
+
+      - name: Use an npm that speaks OIDC
+        run: npm install -g npm@latest
 
       - run: npm ci
 
@@ -59,6 +65,10 @@ jobs:
             fi
           done
 
+      # Authenticated by OIDC trusted publishing — no npm token anywhere in
+      # this workflow. npm generates the provenance attestation automatically
+      # for a public package from a public repo, so `--provenance` is implied.
+      #
       # Idempotent: skip if this version is already on npm, so re-tagging an
       # already-published version (or re-running the job) never false-fails.
       - name: Publish to npm (skip if version already published)
@@ -67,7 +77,5 @@ jobs:
           if npm view "@adkinn/astro-ai-readiness@${VERSION}" version >/dev/null 2>&1; then
             echo "@adkinn/astro-ai-readiness@${VERSION} is already published — skipping publish."
           else
-            npm publish --provenance --access public
+            npm publish --access public
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -71,21 +71,44 @@ gh label create "meta: out-of-scope" --color cfd3d7 --description "Per the open-
 
 The issue forms reference `priority: medium` and `status: needs-triage` as triage defaults — those labels must exist before the forms work cleanly.
 
-## 5. NPM_TOKEN secret (gates `release.yml`)
+## 5. npm trusted publishing (gates `release.yml`)
 
-Two sub-steps; the token never leaves your shell:
+`release.yml` authenticates to npm with **OIDC trusted publishing** — there is
+no npm token in this repo, no `NPM_TOKEN` secret to set, and nothing to rotate.
+GitHub mints a short-lived, workflow-scoped credential at publish time.
 
-```bash
-# Generate the token (npm web at npmjs.com/settings/adkinn/tokens also works)
-npm token create --read-only=false
+Configure it once on npm, at
+<https://www.npmjs.com/package/@adkinn/astro-ai-readiness/access> →
+**Trusted publisher**:
 
-# Paste the npm_xxx output into the secret prompt
-gh secret set NPM_TOKEN -R adkinn/astro-ai-readiness
-```
+| Field | Value |
+|---|---|
+| Publisher | GitHub Actions |
+| Organization or user | `adkinn` |
+| Repository | `astro-ai-readiness` |
+| Workflow filename | `release.yml` |
+| Environment | *(leave empty)* |
+| Allowed actions | `npm publish` |
 
-**Token type matters.** Generate as **automation** (not classic publish), and confirm 2FA is set to "auth-only" (not "auth-and-write") at <https://www.npmjs.com/settings/adkinn/profile> — otherwise the workflow bounces on OTP and `release.yml` fails on every tag push.
+Every field is case-sensitive and exact. The workflow filename is the
+**filename only** — not a path — and it must include the `.yml` extension.
 
-Until this lands, `release.yml` will checkout-build-verify cleanly but fail at the `npm publish` step. Manual publish from your terminal still works (and that's the v0.0.1 precedent per `plans/05-tracer-postmortem.md`).
+Then, at <https://www.npmjs.com/settings/adkinn/profile>, npm will offer
+**"Require two-factor authentication and disallow tokens."** Turning that on is
+the point of the exercise: it closes the token path entirely, so a leaked or
+stale automation token can't publish. Delete any existing publish tokens after.
+
+Requirements the workflow already satisfies: `permissions: id-token: write`,
+a GitHub-hosted runner (self-hosted is not supported), and npm ≥ 11.5.1 on
+Node ≥ 22.14 — which is why it pins `node-version: 24` and still runs an
+explicit `npm install -g npm@latest` before publishing.
+
+Provenance is **automatic** under trusted publishing for a public package from
+a public repo, so `npm publish` carries no `--provenance` flag.
+
+Until the trusted publisher is configured on npm, `release.yml` will
+checkout-build-verify cleanly and then fail at the publish step with
+`ENEEDAUTH`.
 
 ## 6. Branch protection on `main` — with a sub-decision
 
