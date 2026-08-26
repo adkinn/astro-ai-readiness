@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.12] — 2026-08-26
+
+Docs only — no code, no API change. Two things in the published tarball had stopped being true.
+
+### Changed
+
+- "Shipped on" now describes comicscry.com in the past tense and links to its retirement page instead of the domain. The site was taken down in August 2026; the entry claimed a live reference implementation that a reader could not go look at. The v0.0.9–v0.0.10 provenance is kept — it is still what drove those features.
+- README and `LICENSE` copyright drop the `(DBA Obaron)` qualifier; both now read `Adam Kinney, LLC`.
+
+### Fixed
+
+- Code of Conduct reporting address was `hi@obaron.ai`, on a domain that no longer has MX records — a harassment report sent there would have bounced. Now `adam@adamkinney.com`.
+
 ## [0.0.11] — 2026-07-10
 
 Games. Surfaced by adopting the toolkit on a third site — a face-controlled iOS game whose schema is a `VideoGame`, not a plain `SoftwareApplication`.
@@ -196,7 +209,12 @@ First published release. End-to-end tracer slice per `plans/05-e2e-tracer.md`.
 - TypeScript declarations for `AiReadinessConfig`, `OrganizationConfig`, `FounderConfig`.
 - Build pipeline: tsup (ESM) for `.ts` + `cp` step for `.astro` source files into `dist/components/`.
 
-[Unreleased]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.7...HEAD
+[Unreleased]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.12...HEAD
+[0.0.12]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.11...v0.0.12
+[0.0.11]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.10...v0.0.11
+[0.0.10]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.9...v0.0.10
+[0.0.9]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.8...v0.0.9
+[0.0.8]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.4...v0.0.5

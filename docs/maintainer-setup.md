@@ -1,6 +1,6 @@
 # Maintainer setup
 
-GitHub-UI / npm-web actions needed to complete the Foundation tier of [`obaron/brand/gh-org/repo-management.md`](https://github.com/adkinn/.github/) for this repo. None of these are checkable into git — they live in repo settings, npm settings, or GitHub Actions secrets. This file is the durable list so it isn't just chat history.
+GitHub-UI / npm-web actions needed to complete the Foundation tier of [`brand/gh-org/repo-management.md`](https://github.com/adkinn/.github/) for this repo. None of these are checkable into git — they live in repo settings, npm settings, or GitHub Actions secrets. This file is the durable list so it isn't just chat history.
 
 Run order matters: items 1–4 first (everything else waits on them), then 5–6 once CI has run at least once.
 
@@ -15,9 +15,9 @@ Gates everything below (the workflow files, issue templates, README links all ne
 ## 2. About panel — description, homepage, topics
 
 ```bash
-gh repo edit obaronai/astro-ai-readiness \
+gh repo edit adkinn/astro-ai-readiness \
   --description "AI Readiness toolkit for Astro — JSON-LD helper components today, agent-discoverable file outputs (llms.txt, agents.md, .well-known/mcp.json, named-bot robots.txt rules) on the v0.1 roadmap." \
-  --homepage "https://obaron.ai" \
+  --homepage "https://adamkinney.com" \
   --add-topic ai-readiness \
   --add-topic aeo \
   --add-topic agent-readable \
@@ -34,39 +34,39 @@ The default description currently advertises features v0.0.1 doesn't ship — fi
 ## 3. Enable Discussions
 
 ```bash
-gh api -X PATCH repos/obaronai/astro-ai-readiness -f has_discussions=true
+gh api -X PATCH repos/adkinn/astro-ai-readiness -f has_discussions=true
 ```
 
 `.github/ISSUE_TEMPLATE/config.yml` redirects "questions" to Discussions. Without this enabled, the redirect link 404s — and the moment someone files an issue and gets bounced to a 404, the 24-hour-rule grace period is already burning. **Do this before announcing the repo publicly.**
 
-## 4. Replace default labels with the Obaron set
+## 4. Replace default labels with the maintained set
 
 Single block — deletes the seven we don't want, creates the thirteen we do. Reversible (recreate via `gh label`):
 
 ```bash
-gh label delete bug --yes -R obaronai/astro-ai-readiness
-gh label delete enhancement --yes -R obaronai/astro-ai-readiness
-gh label delete documentation --yes -R obaronai/astro-ai-readiness
-gh label delete wontfix --yes -R obaronai/astro-ai-readiness
-gh label delete duplicate --yes -R obaronai/astro-ai-readiness
-gh label delete invalid --yes -R obaronai/astro-ai-readiness
-gh label delete question --yes -R obaronai/astro-ai-readiness
-gh label delete "help wanted" --yes -R obaronai/astro-ai-readiness
-gh label delete "good first issue" --yes -R obaronai/astro-ai-readiness
+gh label delete bug --yes -R adkinn/astro-ai-readiness
+gh label delete enhancement --yes -R adkinn/astro-ai-readiness
+gh label delete documentation --yes -R adkinn/astro-ai-readiness
+gh label delete wontfix --yes -R adkinn/astro-ai-readiness
+gh label delete duplicate --yes -R adkinn/astro-ai-readiness
+gh label delete invalid --yes -R adkinn/astro-ai-readiness
+gh label delete question --yes -R adkinn/astro-ai-readiness
+gh label delete "help wanted" --yes -R adkinn/astro-ai-readiness
+gh label delete "good first issue" --yes -R adkinn/astro-ai-readiness
 
-gh label create "type: bug" --color d73a4a --description "Something broken" --force -R obaronai/astro-ai-readiness
-gh label create "type: feature" --color a2eeef --description "Net-new functionality" --force -R obaronai/astro-ai-readiness
-gh label create "type: docs" --color 0075ca --description "Documentation-only changes" --force -R obaronai/astro-ai-readiness
-gh label create "priority: high" --color b60205 --description "Active impact, fix soon" --force -R obaronai/astro-ai-readiness
-gh label create "priority: medium" --color fbca04 --description "Default for triage" --force -R obaronai/astro-ai-readiness
-gh label create "priority: low" --color 0e8a16 --description "Nice-to-have" --force -R obaronai/astro-ai-readiness
-gh label create "status: needs-triage" --color bfd4f2 --description "Default on every new issue until reviewed" --force -R obaronai/astro-ai-readiness
-gh label create "status: needs-info" --color fef2c0 --description "Waiting on reporter for reproduction details" --force -R obaronai/astro-ai-readiness
-gh label create "status: in-progress" --color 5319e7 --description "Actively being worked on" --force -R obaronai/astro-ai-readiness
-gh label create "status: blocked" --color 24292f --description "Waiting on external dependency" --force -R obaronai/astro-ai-readiness
-gh label create "good first issue" --color 7057ff --description "Curated for new contributors" --force -R obaronai/astro-ai-readiness
-gh label create "help wanted" --color 008672 --description "Maintainer welcomes external help here" --force -R obaronai/astro-ai-readiness
-gh label create "meta: out-of-scope" --color cfd3d7 --description "Per the open-vs-closed boundary" --force -R obaronai/astro-ai-readiness
+gh label create "type: bug" --color d73a4a --description "Something broken" --force -R adkinn/astro-ai-readiness
+gh label create "type: feature" --color a2eeef --description "Net-new functionality" --force -R adkinn/astro-ai-readiness
+gh label create "type: docs" --color 0075ca --description "Documentation-only changes" --force -R adkinn/astro-ai-readiness
+gh label create "priority: high" --color b60205 --description "Active impact, fix soon" --force -R adkinn/astro-ai-readiness
+gh label create "priority: medium" --color fbca04 --description "Default for triage" --force -R adkinn/astro-ai-readiness
+gh label create "priority: low" --color 0e8a16 --description "Nice-to-have" --force -R adkinn/astro-ai-readiness
+gh label create "status: needs-triage" --color bfd4f2 --description "Default on every new issue until reviewed" --force -R adkinn/astro-ai-readiness
+gh label create "status: needs-info" --color fef2c0 --description "Waiting on reporter for reproduction details" --force -R adkinn/astro-ai-readiness
+gh label create "status: in-progress" --color 5319e7 --description "Actively being worked on" --force -R adkinn/astro-ai-readiness
+gh label create "status: blocked" --color 24292f --description "Waiting on external dependency" --force -R adkinn/astro-ai-readiness
+gh label create "good first issue" --color 7057ff --description "Curated for new contributors" --force -R adkinn/astro-ai-readiness
+gh label create "help wanted" --color 008672 --description "Maintainer welcomes external help here" --force -R adkinn/astro-ai-readiness
+gh label create "meta: out-of-scope" --color cfd3d7 --description "Per the open-vs-closed boundary" --force -R adkinn/astro-ai-readiness
 ```
 
 The issue forms reference `priority: medium` and `status: needs-triage` as triage defaults — those labels must exist before the forms work cleanly.
@@ -80,7 +80,7 @@ Two sub-steps; the token never leaves your shell:
 npm token create --read-only=false
 
 # Paste the npm_xxx output into the secret prompt
-gh secret set NPM_TOKEN -R obaronai/astro-ai-readiness
+gh secret set NPM_TOKEN -R adkinn/astro-ai-readiness
 ```
 
 **Token type matters.** Generate as **automation** (not classic publish), and confirm 2FA is set to "auth-only" (not "auth-and-write") at <https://www.npmjs.com/settings/adkinn/profile> — otherwise the workflow bounces on OTP and `release.yml` fails on every tag push.
@@ -89,7 +89,7 @@ Until this lands, `release.yml` will checkout-build-verify cleanly but fail at t
 
 ## 6. Branch protection on `main` — with a sub-decision
 
-The playbook spec ([`obaron/brand/gh-org/repo-management.md`](https://github.com/adkinn/.github/) lines 70–84) wants the full set:
+The playbook spec ([`brand/gh-org/repo-management.md`](https://github.com/adkinn/.github/) lines 70–84) wants the full set:
 
 - ✅ Require a pull request before merging
 - ✅ Require status checks to pass before merging
@@ -129,7 +129,7 @@ For now: **Option 1.** Apply via web UI — Settings → Branches → Add rule o
 The `gh api` form (drop-in once you decide to require status checks):
 
 ```bash
-gh api -X PUT repos/obaronai/astro-ai-readiness/branches/main/protection \
+gh api -X PUT repos/adkinn/astro-ai-readiness/branches/main/protection \
   --input - <<'EOF'
 {
   "required_status_checks": {
@@ -149,7 +149,7 @@ EOF
 For Option 1 (no status check), drop `required_status_checks` to `null`:
 
 ```bash
-gh api -X PUT repos/obaronai/astro-ai-readiness/branches/main/protection \
+gh api -X PUT repos/adkinn/astro-ai-readiness/branches/main/protection \
   --input - <<'EOF'
 {
   "required_status_checks": null,
