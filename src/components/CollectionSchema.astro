@@ -1,6 +1,7 @@
 ---
 import { config } from 'virtual:ai-readiness-config'
 import { jsonLd } from '../utils/json-ld'
+import { publisherId } from '../utils/identity'
 
 interface Props {
   name: string
@@ -16,7 +17,7 @@ const cp: Record<string, unknown> = {
   name,
   url,
   isPartOf: { '@id': `${config.site}#website` },
-  publisher: { '@id': `${config.site}#organization` },
+  publisher: { '@id': publisherId(config) },
 }
 
 if (description) cp.description = description

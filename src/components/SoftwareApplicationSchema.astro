@@ -1,17 +1,14 @@
 ---
 import { config } from 'virtual:ai-readiness-config'
 import { jsonLd } from '../utils/json-ld'
+import { publisherId } from '../utils/identity'
 
 const app = config.softwareApplication
 
 type SchemaJson = Record<string, unknown>
 
-// Link publisher/author to the site identity (Organization preferred, else Person).
-const identityId = config.organization
-  ? `${config.site}#organization`
-  : config.person
-    ? `${config.site}#person`
-    : null
+// Link publisher/author to the site identity — same rule as every other component.
+const identityId = publisherId(config)
 
 let appLd: SchemaJson | null = null
 
@@ -56,10 +53,8 @@ if (app) {
     }
   }
 
-  if (identityId) {
-    appLd.publisher = { '@id': identityId }
-    appLd.author = { '@id': identityId }
-  }
+  appLd.publisher = { '@id': identityId }
+  appLd.author = { '@id': identityId }
 }
 ---
 {appLd && <script type="application/ld+json" is:inline set:html={jsonLd(appLd)}></script>}
