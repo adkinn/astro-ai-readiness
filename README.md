@@ -2,9 +2,17 @@
 
 > AI Readiness toolkit for Astro — eight JSON-LD helper components plus `dist/llms.txt`, `dist/llms-full.txt`, `dist/agents.md`, `dist/robots.txt`, and `dist/.well-known/mcp.json`.
 
-**Status:** v0.0.11 — app / product / game support. `<SoftwareApplicationSchema />` (screenshots, feature list, offers, and a `type` for `VideoGame` / `MobileApplication` / `WebApplication` + `gamePlatform`), Organization `description` + `sameAs` + `contactPoint`, `founder.url`, WebSite `inLanguage`, and custom `## sections` for `agents.md` — proven on three real sites (a person, an app, a game).
+**Status:** v0.0.14 — Astro 7 support and one publisher rule across the graph. Tested against Astro 5, 6, and 7 on Node 22 and 24. Builds on v0.0.11's app / product / game support: `<SoftwareApplicationSchema />` (screenshots, feature list, offers, and a `type` for `VideoGame` / `MobileApplication` / `WebApplication` + `gamePlatform`), Organization `description` + `sameAs` + `contactPoint`, `founder.url`, WebSite `inLanguage`, and custom `## sections` for `agents.md` — proven on three real sites (a person, an app, a game).
+
+## New in v0.0.14
+
+- **Astro 7.** The peer range is `^5.0.0 || ^6.0.0 || ^7.0.0`, and CI runs the whole gate against 5.18.0, 6.4.8, and 7.2.9 on Node 22 and 24.
+- **One publisher rule.** `WebSiteSchema` used to publish as Person while the other components published as Organization, so a site declaring both emitted two different publishers for itself. Organization now wins the tie in all four. Single-identity sites are unaffected.
+- **`<TechArticleSchema />` works on person-first sites.** It falls back to `person` when `organization.founder` is unset, instead of crashing on the missing `organization`.
+- **`policy: 'private'` omits the sitemap** by default, rather than publishing an index of the URLs it just disallowed.
 
 ## What ships in v0.0.11
+
 
 **Eight JSON-LD components**:
 - `<OrganizationSchema />` — Organization block. Config-driven from `organization` (optional; now supports `description`, `contactPoint`, and `founder.url`); place in your `BaseLayout` so it ships site-wide and the `#organization` `@id` reference resolves on every page. Renders nothing if `organization` is unset.
@@ -148,6 +156,7 @@ export default defineConfig({
         // training and grounding under one token, so override rules when needed.
         policy: 'training-opt-out',
         // Defaults to https://your-site.com/sitemap-index.xml. Set false to omit.
+        // The private policy omits it by default; an explicit URL still opts in.
         sitemap: 'https://your-site.com/sitemap-index.xml',
         contentSignals: {
           search: 'yes',
@@ -249,7 +258,7 @@ import { TechArticleSchema } from '@adkinn/astro-ai-readiness/components'
 />
 ```
 
-`<TechArticleSchema>` defaults `author` to a Person synthesized from `config.organization.founder` (name from `founder.name`, url from `founder.sameAs[0]`). Pass an explicit `author={{ name, url? }}` to override on multi-author sites. The component throws at build time if `author` is omitted and `founder` is unset — actionable error pointing at the `aiReadiness({...})` config.
+`<TechArticleSchema>` defaults `author` to a Person synthesized from whichever identity the site declares — `organization.founder` on a company site, `person` on a solo one (name from `.name`, URL from `.url`, falling back to `.sameAs[0]`). Pass an explicit `author={{ name, url? }}` to override on multi-author sites. The component throws at build time only if `author` is omitted and neither identity is configured — actionable error pointing at the `aiReadiness({...})` config.
 
 Advanced — full prop surface:
 
