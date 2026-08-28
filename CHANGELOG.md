@@ -8,7 +8,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.0.15] — 2026-08-28
 
-A third state for content signals: say nothing.
+Content signals that land where crawlers read them.
+
+### Fixed
+
+- **`Content-Signal` is emitted inside a `User-agent` group.** It is a group-member
+  record, like `Allow` and `Disallow`. Through v0.0.14 the toolkit wrote it above
+  the first `User-agent:` line, where per [RFC 9309](https://www.rfc-editor.org/rfc/rfc9309.html)
+  it belongs to no group and conforming parsers may discard it — so the signal may
+  never have been read on any site using this toolkit. Both reference
+  implementations of the policy place it in a group: Cloudflare's own robots.txt
+  puts it in the `*` group after the crawl rules, and stackoverflow.com puts it
+  immediately after `User-agent: *`. The toolkit now writes it into the `*` group.
+  Custom `rules` that name no wildcard group get a dedicated `User-agent: *` group
+  carrying only the signal — an empty group grants and denies no paths, so the
+  site-wide preference is expressed without inventing a crawl rule.
+
+  **Action required if you enabled `robotsTxt` before v0.0.15:** rebuild and
+  redeploy. Your configured signals were likely inert.
 
 ### Added
 

@@ -2,10 +2,20 @@
 
 > AI Readiness toolkit for Astro — eight JSON-LD helper components plus `dist/llms.txt`, `dist/llms-full.txt`, `dist/agents.md`, `dist/robots.txt`, and `dist/.well-known/mcp.json`.
 
-**Status:** v0.0.15 — a third state for content signals: say nothing. Tested against Astro 5, 6, and 7 on Node 22 and 24. Builds on v0.0.11's app / product / game support: `<SoftwareApplicationSchema />` (screenshots, feature list, offers, and a `type` for `VideoGame` / `MobileApplication` / `WebApplication` + `gamePlatform`), Organization `description` + `sameAs` + `contactPoint`, `founder.url`, WebSite `inLanguage`, and custom `## sections` for `agents.md` — proven on three real sites (a person, an app, a game).
+**Status:** v0.0.15 — content signals that land where crawlers read them. Tested against Astro 5, 6, and 7 on Node 22 and 24. Builds on v0.0.11's app / product / game support: `<SoftwareApplicationSchema />` (screenshots, feature list, offers, and a `type` for `VideoGame` / `MobileApplication` / `WebApplication` + `gamePlatform`), Organization `description` + `sameAs` + `contactPoint`, `founder.url`, WebSite `inLanguage`, and custom `## sections` for `agents.md` — proven on three real sites (a person, an app, a game).
 
 ## New in v0.0.15
 
+Three fixes to `robots.txt` content signals, one of them consequential.
+
+- **`Content-Signal` now sits inside a `User-agent` group.** It is a group-member
+  record, like `Allow` and `Disallow`. Through v0.0.14 the toolkit emitted it above
+  the first `User-agent:` line, where — per [RFC 9309](https://www.rfc-editor.org/rfc/rfc9309.html)
+  — it belongs to no group and parsers may discard it. Both reference
+  implementations ([Cloudflare's own robots.txt](https://blog.cloudflare.com/robots.txt),
+  `stackoverflow.com`) place it in a group. **If you enabled `robotsTxt` on an
+  earlier version, re-run your build: the signal you configured may not have been
+  read.**
 - **`contentSignals` accepts `'omit'`.** Saying nothing about a signal is not the
   same as saying `no` — an absent signal expresses no preference, while `no`
   expresses a refusal. A site that wants to declare `search=yes` and stay silent
@@ -37,7 +47,7 @@ that omits the sitemap. See `CHANGELOG.md` for the full history.
 - `dist/llms-full.txt` — manual full-context markdown from the `llmsFull` config block. This is config-driven in v0.0.7; content-collection introspection is a later layer.
 - `dist/agents.md` — Markdown discovery file for AI-agent crawlers from the `agentsMd` config block. H1 / blockquote description / optional `## Audience`, arbitrary `## sections` (title + markdown content), `## Contact`, and `## Links`. Opt-in.
 - `dist/.well-known/mcp.json` — [Model Context Protocol](https://modelcontextprotocol.io/) discovery file from the `mcp` config block. Pretty-printed JSON with `$schema` reference to the toolkit-published v1 shape (per D-22). Supports `status: 'active'` (requires `url` + `tools[]`) and `status: 'planned'` (requires `planned_tools[]`; `url` forbidden by schema). Opt-in.
-- `dist/robots.txt` — robots policy composition from the `robotsTxt` config block. Presets: `search-visible`, `training-opt-out` (default), and `private`; supports explicit bot rules, `Sitemap`, and optional `Content-Signal` directives (each signal is `'yes'`, `'no'`, or `'omit'` to stay silent about it).
+- `dist/robots.txt` — robots policy composition from the `robotsTxt` config block. Presets: `search-visible`, `training-opt-out` (default), and `private`; supports explicit bot rules, `Sitemap`, and optional [Content Signals](https://blog.cloudflare.com/content-signals-policy/) directives (each signal is `'yes'`, `'no'`, or `'omit'` to stay silent about it), emitted inside the `*` user-agent group.
 
 **`@astrojs/sitemap` detection per D-8.** When you call `aiReadiness({...})` and `@astrojs/sitemap` isn't in your integrations list, the toolkit logs a build-time warning. Sitemap is an AI-Readiness baseline; when `robotsTxt` is enabled, the generated `robots.txt` includes a `Sitemap` line by default.
 
@@ -167,9 +177,12 @@ export default defineConfig({
         // The private policy omits it by default; an explicit URL still opts in.
         sitemap: 'https://your-site.com/sitemap-index.xml',
         contentSignals: {
-          // 'yes' grants, 'no' refuses, 'omit' says nothing at all. Omitting
-          // every signal drops the Content-Signal line rather than emitting an
-          // empty one.
+          // Per the Content Signals Policy: 'yes' grants the use, 'no'
+          // refuses it, and 'omit' says nothing — which the policy defines as
+          // neither granting nor restricting. Omitting every signal drops the
+          // Content-Signal line rather than emitting an empty one. The line is
+          // written into the `*` user-agent group, where crawlers read it.
+          // https://blog.cloudflare.com/content-signals-policy/
           search: 'yes',
           aiTrain: 'no',
           aiInput: 'yes',

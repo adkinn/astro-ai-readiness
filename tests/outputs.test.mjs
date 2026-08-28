@@ -212,6 +212,41 @@ test('composeRobotsTxt defaults to training opt-out while preserving ordinary se
   assert.match(content, /Sitemap: https:\/\/example\.com\/sitemap-index\.xml/)
 })
 
+test('composeRobotsTxt puts Content-Signal inside the wildcard group', () => {
+  const content = composeRobotsTxt({ ...baseConfig, robotsTxt: {} })
+
+  // Content-Signal is a group-member record. Emitted above the first User-agent
+  // line it belongs to no group, and RFC 9309 parsers may discard it — which is
+  // what shipped through v0.0.14. Both reference implementations (Cloudflare's own
+  // robots.txt, stackoverflow.com) place it inside a user-agent group.
+  assert.match(
+    content,
+    /User-agent: \*\nContent-Signal: search=yes, ai-train=no, ai-input=yes\nAllow: \//
+  )
+
+  const signalLine = content.split('\n').findIndex((l) => l.startsWith('Content-Signal:'))
+  const firstGroupLine = content.split('\n').findIndex((l) => l.startsWith('User-agent:'))
+  assert.ok(firstGroupLine !== -1)
+  assert.ok(
+    signalLine > firstGroupLine,
+    'Content-Signal must not precede the first User-agent line'
+  )
+})
+
+test('custom rules without a wildcard group still carry site-wide signals', () => {
+  const content = composeRobotsTxt({
+    ...baseConfig,
+    robotsTxt: { rules: [{ userAgent: 'GPTBot', disallow: ['/'] }] },
+  })
+
+  // The signal describes the site, not GPTBot. Hanging it off the only group
+  // present would silently narrow it to one crawler, so it gets a wildcard group
+  // of its own — no Allow/Disallow, so no crawl rule is invented.
+  assert.match(content, /User-agent: \*\nContent-Signal: search=yes, ai-train=no, ai-input=yes\n/)
+  assert.doesNotMatch(content, /User-agent: GPTBot\nContent-Signal:/)
+  assert.match(content, /User-agent: GPTBot\nDisallow: \//)
+})
+
 test('composeRobotsTxt drops individual signals marked omit', () => {
   const content = composeRobotsTxt({
     ...baseConfig,
