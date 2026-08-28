@@ -33,3 +33,22 @@ jobs:
       - run: npm test
 
       - run: npm run build
+
+  # A single, stable required check.
+  #
+  # Matrix jobs carry their axes in the name (`test (22, 5.18.0)`), so every
+  # change to the matrix renames every job — and branch protection, which pins
+  # literal context names, is left waiting on checks that will never report
+  # again. Adding the Astro axis did exactly that to `test (22)` / `test (24)`.
+  #
+  # Protect this job instead. Its name never changes, and it fails if any
+  # matrix leg fails or is skipped.
+  gate:
+    if: always()
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every matrix job succeeded
+        run: |
+          echo "test matrix result: ${{ needs.test.result }}"
+          [ "${{ needs.test.result }}" = "success" ]
