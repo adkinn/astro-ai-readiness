@@ -293,7 +293,11 @@ The v0.1 line is content → artifacts: components and files. Build-time AI-read
 
 - [adamkinney.com](https://adamkinney.com) — the personal-brand reference implementation. Person-first: runs `PersonSchema` + `WebSiteSchema` site-wide and emits `dist/llms.txt` at <https://adamkinney.com/llms.txt> and `dist/agents.md` at <https://adamkinney.com/agents.md>.
 - comicscry.com — the app/product reference implementation (Astro 6 SSR, `@astrojs/cloudflare`). Ran `OrganizationSchema` + `WebSiteSchema` site-wide and `SoftwareApplicationSchema` + `FAQPageSchema` on the homepage, and emitted `dist/llms.txt`, `dist/agents.md`, and `dist/robots.txt`. Drove the app/product features in v0.0.9–v0.0.10. **[Retired August 2026](https://adamkinney.com/lab/comic-scry/)** — the site is gone, so this one is history rather than something you can go look at.
-- [gurn.app](https://gurn.app) — the game reference implementation (Astro 6 SSR, `@astrojs/cloudflare`). Runs `OrganizationSchema` + `WebSiteSchema` site-wide and `SoftwareApplicationSchema` (as a `VideoGame`) + `FAQPageSchema` on the homepage, and emits `dist/llms.txt` + `dist/robots.txt`. Drove `VideoGame` / `gamePlatform` support in v0.0.11.
+
+`VideoGame` / `gamePlatform` support in v0.0.11 was built for gurn.app, but that
+adoption never merged — the live site's `llms.txt` is hand-written and its
+`robots.txt` carries no generator line. The feature is tested and shipped; it
+just doesn't have a site you can go look at yet.
 
 ## Contributing
 
