@@ -1,6 +1,7 @@
 ---
 import { config } from 'virtual:ai-readiness-config'
 import { jsonLd } from '../utils/json-ld'
+import { publisherId } from '../utils/identity'
 import type { TechArticleAuthor, TechArticleImage } from './types'
 
 interface Props {
@@ -36,25 +37,32 @@ const {
   dependencies,
 } = Astro.props
 
-// D-21: author defaults to a Person synthesized from config.organization.founder.
-// Founder-precondition guard: if author is omitted AND founder is unset, fail loudly
-// at build time rather than tighten the global schema (which would break consumers
-// who don't use TechArticle and don't set founder).
-const founder = config.organization.founder
+// D-21: author defaults to a Person synthesized from the site's own identity —
+// `organization.founder` for a company site, `person` for a solo one. A person-first
+// site has no organization to hang a founder off, so requiring one there would be
+// asking for a block that config shape cannot hold.
+//
+// Guard: if author is omitted and neither identity offers a name, fail loudly at
+// build time rather than tighten the global schema (which would break consumers who
+// don't use TechArticle).
+const founder = config.organization?.founder
+const authorSource = founder ?? config.person
 let resolvedAuthor: TechArticleAuthor
 if (author) {
   resolvedAuthor = author
 } else {
-  if (!founder) {
+  if (!authorSource) {
     throw new Error(
-      'TechArticleSchema: `author` prop omitted and `config.organization.founder` ' +
-      'is unset. Either pass an explicit `author` prop, or add a `founder` block to ' +
-      'the `organization` config in your `aiReadiness({...})` integration call.'
+      'TechArticleSchema: `author` prop omitted and no author identity is ' +
+      'configured. Either pass an explicit `author` prop, or — depending on how ' +
+      'your site is configured — add a `founder` block to `organization`, or a ' +
+      '`person` block, in your `aiReadiness({...})` integration call.'
     )
   }
+  const authorUrl = authorSource.url ?? authorSource.sameAs?.[0]
   resolvedAuthor = {
-    name: founder.name,
-    ...(founder.sameAs && founder.sameAs[0] && { url: founder.sameAs[0] }),
+    name: authorSource.name,
+    ...(authorUrl && { url: authorUrl }),
   }
 }
 
@@ -75,7 +83,7 @@ const ta: Record<string, unknown> = {
   datePublished,
   dateModified: dateModified ?? datePublished,
   author: { '@type': 'Person', ...resolvedAuthor },
-  publisher: { '@id': `${config.site}#organization` },
+  publisher: { '@id': publisherId(config) },
   url: resolvedUrl,
 }
 

@@ -12,8 +12,9 @@ jobs:
       fail-fast: false
       matrix:
         node: [22, 24]
+        astro: [5.18.0, 6.4.8, 7.2.9]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v7
         with:
@@ -22,6 +23,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Test against Astro ${{ matrix.astro }}
+        run: npm install --no-save --package-lock=false astro@${{ matrix.astro }}
+
       - run: npm run lint
 
       - run: npm run typecheck
@@ -29,3 +33,22 @@ jobs:
       - run: npm test
 
       - run: npm run build
+
+  # A single, stable required check.
+  #
+  # Matrix jobs carry their axes in the name (`test (22, 5.18.0)`), so every
+  # change to the matrix renames every job — and branch protection, which pins
+  # literal context names, is left waiting on checks that will never report
+  # again. Adding the Astro axis did exactly that to `test (22)` / `test (24)`.
+  #
+  # Protect this job instead. Its name never changes, and it fails if any
+  # matrix leg fails or is skipped.
+  gate:
+    if: always()
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every matrix job succeeded
+        run: |
+          echo "test matrix result: ${{ needs.test.result }}"
+          [ "${{ needs.test.result }}" = "success" ]

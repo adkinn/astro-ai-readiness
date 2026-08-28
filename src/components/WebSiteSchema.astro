@@ -1,11 +1,8 @@
 ---
 import { config } from 'virtual:ai-readiness-config'
 import { jsonLd } from '../utils/json-ld'
+import { publisherId } from '../utils/identity'
 
-// A person-first site publishes as the person; otherwise the organization.
-const publisherId = config.person
-  ? `${config.site}#person`
-  : `${config.site}#organization`
 
 const ws: Record<string, unknown> = {
   '@context': 'https://schema.org',
@@ -13,7 +10,7 @@ const ws: Record<string, unknown> = {
   '@id': `${config.site}#website`,
   name: config.webSite?.name ?? config.person?.name ?? config.organization?.name ?? config.site,
   url: config.site,
-  publisher: { '@id': publisherId },
+  publisher: { '@id': publisherId(config) },
 }
 
 if (config.webSite?.description) ws.description = config.webSite.description

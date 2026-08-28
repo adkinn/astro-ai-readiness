@@ -6,6 +6,71 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.14] — 2026-08-27
+
+Astro 7 support, and a JSON-LD graph that agrees with itself.
+
+### Added
+
+- **Astro 7 support.** `peerDependencies` widens to `^5.0.0 || ^6.0.0 || ^7.0.0`.
+  CI now runs the full gate against Astro 5.18.0, 6.4.8, and 7.2.9 on Node 22 and
+  24, so the supported range is tested rather than asserted.
+- `<TechArticleSchema />` falls back to `config.person` when `organization.founder`
+  is unset. A person-first site has no organization to hang a founder off, so it
+  previously had to pass an explicit `author` on every article or hit a build error
+  telling it to add a config block its shape cannot hold.
+
+### Changed
+
+- **One publisher rule across the graph.** `publisher` / `author` `@id` resolution
+  moves into `publisherId()` and is now identical in `WebSiteSchema`,
+  `CollectionSchema`, `TechArticleSchema`, and `SoftwareApplicationSchema`.
+  `WebSiteSchema` previously preferred Person while the others preferred
+  Organization, so a site configuring **both** identities emitted a `WebSite`
+  published by `#person` alongside pages published by `#organization` — two
+  different publishers for one site. Organization now wins the tie everywhere.
+  Sites declaring a single identity (the only shape found in practice) are
+  unaffected.
+- `<TechArticleSchema />` prefers `founder.url` over `founder.sameAs[0]` for the
+  synthesized author URL. `sameAs[0]` is a social profile by convention; `url` is
+  the canonical one and was being ignored when both were set.
+- `robotsTxt.policy: 'private'` now omits the sitemap by default. Publishing a
+  sitemap that enumerates the URLs the same file disallows leaks the list it is
+  meant to withhold. An explicit `sitemap` value still opts back in.
+- `@types/node` pinned to `^22` to match `engines.node >= 22.12.0`, so the build
+  catches use of APIs missing from the oldest supported runtime.
+
+### Removed
+
+- The `overrides` block. npm applies `overrides` only for the root project, so it
+  did nothing for consumers and was inert weight in the published manifest.
+
+### Fixed
+
+- `config.organization.founder` was read unguarded, so a person-first site using
+  `<TechArticleSchema />` crashed at build time on a missing `organization`.
+
+## [0.0.13] — 2026-08-26
+
+Contact address only — no code, no API change.
+
+### Changed
+
+- Public contact for the package is now `npm@adamkinney.com`, a dedicated address for open-source traffic rather than a personal inbox. `package.json` gains an `author.email` (it had a name and URL but no address, so npm showed no way to reach the maintainer), and the Code of Conduct reporting address moves off `adam@adamkinney.com`.
+
+## [0.0.12] — 2026-08-26
+
+Docs only — no code, no API change. Two things in the published tarball had stopped being true.
+
+### Changed
+
+- "Shipped on" now describes comicscry.com in the past tense and links to its retirement page instead of the domain. The site was taken down in August 2026; the entry claimed a live reference implementation that a reader could not go look at. The v0.0.9–v0.0.10 provenance is kept — it is still what drove those features.
+- README and `LICENSE` copyright drop the `(DBA Obaron)` qualifier; both now read `Adam Kinney, LLC`.
+
+### Fixed
+
+- Code of Conduct reporting address was `hi@obaron.ai`, on a domain that no longer has MX records — a harassment report sent there would have bounced. Now `adam@adamkinney.com`.
+
 ## [0.0.11] — 2026-07-10
 
 Games. Surfaced by adopting the toolkit on a third site — a face-controlled iOS game whose schema is a `VideoGame`, not a plain `SoftwareApplication`.
@@ -196,7 +261,13 @@ First published release. End-to-end tracer slice per `plans/05-e2e-tracer.md`.
 - TypeScript declarations for `AiReadinessConfig`, `OrganizationConfig`, `FounderConfig`.
 - Build pipeline: tsup (ESM) for `.ts` + `cp` step for `.astro` source files into `dist/components/`.
 
-[Unreleased]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.7...HEAD
+[Unreleased]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.13...HEAD
+[0.0.13]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.12...v0.0.13
+[0.0.12]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.11...v0.0.12
+[0.0.11]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.10...v0.0.11
+[0.0.10]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.9...v0.0.10
+[0.0.9]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.8...v0.0.9
+[0.0.8]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.4...v0.0.5
