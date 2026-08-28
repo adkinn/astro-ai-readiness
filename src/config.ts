@@ -239,6 +239,11 @@ const robotsTxtSchema = z.object({
     aiTrain: contentSignalValueSchema.optional(),
     aiInput: contentSignalValueSchema.optional(),
   }).strict().optional(),
+  // Defaults to true whenever a Content-Signal line is emitted. The policy text
+  // is what turns `ai-train=no` from a string into an express reservation of
+  // rights under Article 4 of the EU DSM Directive; set false only if you state
+  // that framing elsewhere, e.g. in your own terms linked from the site.
+  contentSignalNotice: z.boolean().optional(),
   rules: z.array(robotsTxtRuleSchema).min(1).optional(),
   additionalLines: z.array(z.string()).optional(),
 }).strict()

@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.0.15] — 2026-08-28
 
-Content signals that land where crawlers read them.
+Content signals that say what they mean, where they're read.
 
 ### Fixed
 
@@ -28,6 +28,21 @@ Content signals that land where crawlers read them.
   redeploy. Your configured signals were likely inert.
 
 ### Added
+
+- **The Content Signals Policy notice, on by default.** When any signal is
+  emitted, `robots.txt` now carries the policy text verbatim above the directives:
+  the (a)/(b)/(c) rules for `yes` / `no` / absent, the definition of `search`,
+  `ai-input`, and `ai-train`, and the closing clause declaring that restrictions
+  are express reservations of rights under Article 4 of the EU DSM Directive.
+  Cloudflare released the policy under CC0, so it is reproduced without
+  restriction; the text is copied byte-for-byte from the live
+  `blog.cloudflare.com/robots.txt` rather than paraphrased.
+
+  This matters because the toolkit's default policy is `training-opt-out`. Emitting
+  `ai-train=no` without the framing that gives it legal standing shipped the
+  refusal and left the authority behind it out. Set `contentSignalNotice: false`
+  to omit the text. A site that omits every signal gets no notice either — the
+  notice interprets signals, and there is nothing to interpret.
 
 - **`'omit'` as a `contentSignals` value.** The Content Signals vocabulary has two
   values, `yes` and `no`, but three states matter: grant, refuse, and say nothing.

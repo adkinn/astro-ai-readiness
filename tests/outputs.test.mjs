@@ -212,6 +212,42 @@ test('composeRobotsTxt defaults to training opt-out while preserving ordinary se
   assert.match(content, /Sitemap: https:\/\/example\.com\/sitemap-index\.xml/)
 })
 
+test('composeRobotsTxt ships the Content Signals Policy notice by default', () => {
+  const content = composeRobotsTxt({ ...baseConfig, robotsTxt: {} })
+
+  // The notice is what makes ai-train=no an express reservation of rights rather
+  // than an unexplained string. Verbatim CC0 text — assert the operative clause.
+  assert.match(content, /^# As a condition of accessing this website, you agree to$/m)
+  assert.match(content, /^# ANY RESTRICTIONS EXPRESSED VIA CONTENT-SIGNALS ARE EXPRESS$/m)
+  assert.match(content, /^# IN THE DIGITAL SINGLE MARKET\.$/m)
+
+  // It defines the signals, so it must precede them.
+  const noticeLine = content.split('\n').findIndex((l) => l.startsWith('# As a condition'))
+  const signalLine = content.split('\n').findIndex((l) => l.startsWith('Content-Signal:'))
+  assert.ok(noticeLine !== -1 && signalLine > noticeLine)
+})
+
+test('contentSignalNotice: false drops the policy text but keeps the signals', () => {
+  const content = composeRobotsTxt({
+    ...baseConfig,
+    robotsTxt: { contentSignalNotice: false },
+  })
+
+  assert.doesNotMatch(content, /As a condition of accessing/)
+  assert.match(content, /User-agent: \*\nContent-Signal: search=yes, ai-train=no, ai-input=yes/)
+})
+
+test('the notice rides with the signals — no signals, no notice', () => {
+  const content = composeRobotsTxt({
+    ...baseConfig,
+    robotsTxt: { contentSignals: { search: 'omit', aiTrain: 'omit', aiInput: 'omit' } },
+  })
+
+  // 28 lines defining signals, above no signals, would be noise.
+  assert.doesNotMatch(content, /As a condition of accessing/)
+  assert.doesNotMatch(content, /Content-Signal/)
+})
+
 test('composeRobotsTxt puts Content-Signal inside the wildcard group', () => {
   const content = composeRobotsTxt({ ...baseConfig, robotsTxt: {} })
 

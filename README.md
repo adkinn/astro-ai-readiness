@@ -6,8 +6,16 @@
 
 ## New in v0.0.15
 
-Three fixes to `robots.txt` content signals, one of them consequential.
+Content signals that say what they mean, where they're read.
 
+- **The Content Signals Policy notice ships with the signals.** A
+  `Content-Signal: ai-train=no` is a string until something states what it means
+  and under what authority. The policy's own text — reproduced verbatim, [released
+  under CC0](https://blog.cloudflare.com/content-signals-policy/) — defines each
+  signal and declares that restrictions are *express reservations of rights under
+  Article 4 of the EU DSM Directive*. The toolkit defaults to `training-opt-out`,
+  so shipping the refusal without that framing was leaving the standing off the
+  claim. Set `contentSignalNotice: false` to omit it. No signals means no notice.
 - **`Content-Signal` now sits inside a `User-agent` group.** It is a group-member
   record, like `Allow` and `Disallow`. Through v0.0.14 the toolkit emitted it above
   the first `User-agent:` line, where — per [RFC 9309](https://www.rfc-editor.org/rfc/rfc9309.html)
@@ -176,6 +184,10 @@ export default defineConfig({
         // Defaults to https://your-site.com/sitemap-index.xml. Set false to omit.
         // The private policy omits it by default; an explicit URL still opts in.
         sitemap: 'https://your-site.com/sitemap-index.xml',
+        // The CC0 Content Signals Policy text ships above the signals by
+        // default — it is what makes a restriction an express reservation of
+        // rights. Set false only if you state that framing elsewhere.
+        contentSignalNotice: true,
         contentSignals: {
           // Per the Content Signals Policy: 'yes' grants the use, 'no'
           // refuses it, and 'omit' says nothing — which the policy defines as
