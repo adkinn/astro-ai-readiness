@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.15] — 2026-08-28
+
+A third state for content signals: say nothing.
+
+### Added
+
+- **`'omit'` as a `contentSignals` value.** The Content Signals vocabulary has two
+  values, `yes` and `no`, but three states matter: grant, refuse, and say nothing.
+  An absent signal expresses no preference; `no` expresses a refusal. Silence was
+  previously reachable only by passing `undefined` and relying on it surviving a
+  spread over the policy defaults — an accident of the implementation, not an API,
+  and one the `'yes' | 'no'` type told consumers did not exist. `'omit'` makes it
+  explicit and typed.
+
+### Fixed
+
+- **A bare `Content-Signal: ` no longer ships.** With every signal omitted,
+  `composeContentSignal` joined an empty array and the caller pushed the result
+  unconditionally, emitting a malformed directive — header, colon, trailing space,
+  no signals. The schema accepted it and the build succeeded, so the broken line
+  reached production silently. The line is now dropped when there is nothing to
+  say; rules and `Sitemap` are unaffected.
+
 ## [0.0.14] — 2026-08-27
 
 Astro 7 support, and a JSON-LD graph that agrees with itself.
@@ -261,7 +284,9 @@ First published release. End-to-end tracer slice per `plans/05-e2e-tracer.md`.
 - TypeScript declarations for `AiReadinessConfig`, `OrganizationConfig`, `FounderConfig`.
 - Build pipeline: tsup (ESM) for `.ts` + `cp` step for `.astro` source files into `dist/components/`.
 
-[Unreleased]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.13...HEAD
+[Unreleased]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.15...HEAD
+[0.0.15]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.14...v0.0.15
+[0.0.14]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.13...v0.0.14
 [0.0.13]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.12...v0.0.13
 [0.0.12]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.11...v0.0.12
 [0.0.11]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.10...v0.0.11
