@@ -11,6 +11,14 @@ updates:
       patch-updates:
         update-types: ["patch"]
     open-pull-requests-limit: 5  # 1 grouped patch + ~4 individual minor/major
+    ignore:
+      # `@types/node` tracks the OLDEST Node we support (`engines.node`
+      # >= 22.12.0), not the newest one released. Typing against a newer major
+      # lets code compile that references APIs absent on the minimum runtime —
+      # the failure lands on a consumer, not in CI. Raise `engines.node` first,
+      # then this pin follows it. Minor/patch bumps still come through.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"

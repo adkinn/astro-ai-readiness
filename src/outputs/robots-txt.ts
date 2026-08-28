@@ -90,7 +90,8 @@ export function composeRobotsTxt(
     ...defaultContentSignals(policy),
     ...robotsTxt.contentSignals,
   }
-  const sitemap = robotsTxt.sitemap === false
+  const sitemap = robotsTxt.sitemap === false ||
+    (policy === 'private' && robotsTxt.sitemap === undefined)
     ? undefined
     : robotsTxt.sitemap ?? defaultSitemap(config.site)
 

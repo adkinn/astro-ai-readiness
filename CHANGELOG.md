@@ -6,6 +6,50 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.14] — 2026-08-27
+
+Astro 7 support, and a JSON-LD graph that agrees with itself.
+
+### Added
+
+- **Astro 7 support.** `peerDependencies` widens to `^5.0.0 || ^6.0.0 || ^7.0.0`.
+  CI now runs the full gate against Astro 5.18.0, 6.4.8, and 7.2.9 on Node 22 and
+  24, so the supported range is tested rather than asserted.
+- `<TechArticleSchema />` falls back to `config.person` when `organization.founder`
+  is unset. A person-first site has no organization to hang a founder off, so it
+  previously had to pass an explicit `author` on every article or hit a build error
+  telling it to add a config block its shape cannot hold.
+
+### Changed
+
+- **One publisher rule across the graph.** `publisher` / `author` `@id` resolution
+  moves into `publisherId()` and is now identical in `WebSiteSchema`,
+  `CollectionSchema`, `TechArticleSchema`, and `SoftwareApplicationSchema`.
+  `WebSiteSchema` previously preferred Person while the others preferred
+  Organization, so a site configuring **both** identities emitted a `WebSite`
+  published by `#person` alongside pages published by `#organization` — two
+  different publishers for one site. Organization now wins the tie everywhere.
+  Sites declaring a single identity (the only shape found in practice) are
+  unaffected.
+- `<TechArticleSchema />` prefers `founder.url` over `founder.sameAs[0]` for the
+  synthesized author URL. `sameAs[0]` is a social profile by convention; `url` is
+  the canonical one and was being ignored when both were set.
+- `robotsTxt.policy: 'private'` now omits the sitemap by default. Publishing a
+  sitemap that enumerates the URLs the same file disallows leaks the list it is
+  meant to withhold. An explicit `sitemap` value still opts back in.
+- `@types/node` pinned to `^22` to match `engines.node >= 22.12.0`, so the build
+  catches use of APIs missing from the oldest supported runtime.
+
+### Removed
+
+- The `overrides` block. npm applies `overrides` only for the root project, so it
+  did nothing for consumers and was inert weight in the published manifest.
+
+### Fixed
+
+- `config.organization.founder` was read unguarded, so a person-first site using
+  `<TechArticleSchema />` crashed at build time on a missing `organization`.
+
 ## [0.0.13] — 2026-08-26
 
 Contact address only — no code, no API change.

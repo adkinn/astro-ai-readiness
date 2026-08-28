@@ -7,6 +7,7 @@ export default defineConfig({
     'components/index': 'src/components/index.ts',
     'components/types': 'src/components/types.ts',
     'utils/json-ld': 'src/utils/json-ld.ts',
+    'utils/identity': 'src/utils/identity.ts',
     'outputs/llms-txt': 'src/outputs/llms-txt.ts',
     'outputs/llms-full': 'src/outputs/llms-full.ts',
     'outputs/agents-md': 'src/outputs/agents-md.ts',

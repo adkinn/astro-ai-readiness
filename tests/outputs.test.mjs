@@ -212,6 +212,23 @@ test('composeRobotsTxt defaults to training opt-out while preserving ordinary se
   assert.match(content, /Sitemap: https:\/\/example\.com\/sitemap-index\.xml/)
 })
 
+test('composeRobotsTxt omits the sitemap for private sites unless explicitly configured', () => {
+  const defaultPrivate = composeRobotsTxt({
+    ...baseConfig,
+    robotsTxt: { policy: 'private' },
+  })
+  assert.doesNotMatch(defaultPrivate, /^Sitemap:/m)
+
+  const explicitSitemap = composeRobotsTxt({
+    ...baseConfig,
+    robotsTxt: {
+      policy: 'private',
+      sitemap: 'https://example.com/private-sitemap.xml',
+    },
+  })
+  assert.match(explicitSitemap, /Sitemap: https:\/\/example\.com\/private-sitemap\.xml/)
+})
+
 test('config schema rejects old inert llmsFull and robotsTxt booleans', () => {
   assert.throws(
     () => aiReadinessConfigSchema.parse({
