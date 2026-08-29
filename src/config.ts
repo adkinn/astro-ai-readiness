@@ -223,7 +223,13 @@ const robotsTxtRuleSchema = z.object({
   { message: 'robots.txt rules require `allow` or `disallow`' }
 )
 
-const contentSignalValueSchema = z.enum(['yes', 'no'])
+// `omit` is not a value the Content Signals vocabulary defines — it means "say
+// nothing about this signal," which is materially different from `no`. An absent
+// signal expresses no preference; `no` expresses a refusal. Sites that want to
+// stay silent on training while still declaring search need a way to say so, and
+// before v0.0.15 the only thing that worked was passing `undefined` and relying
+// on it surviving a spread — an accident of the implementation, not an API.
+const contentSignalValueSchema = z.enum(['yes', 'no', 'omit'])
 
 const robotsTxtSchema = z.object({
   policy: z.enum(['search-visible', 'training-opt-out', 'private']).optional(),
@@ -233,6 +239,11 @@ const robotsTxtSchema = z.object({
     aiTrain: contentSignalValueSchema.optional(),
     aiInput: contentSignalValueSchema.optional(),
   }).strict().optional(),
+  // Defaults to true whenever a Content-Signal line is emitted. The policy text
+  // is what turns `ai-train=no` from a string into an express reservation of
+  // rights under Article 4 of the EU DSM Directive; set false only if you state
+  // that framing elsewhere, e.g. in your own terms linked from the site.
+  contentSignalNotice: z.boolean().optional(),
   rules: z.array(robotsTxtRuleSchema).min(1).optional(),
   additionalLines: z.array(z.string()).optional(),
 }).strict()

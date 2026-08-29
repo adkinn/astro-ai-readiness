@@ -2,14 +2,40 @@
 
 > AI Readiness toolkit for Astro — eight JSON-LD helper components plus `dist/llms.txt`, `dist/llms-full.txt`, `dist/agents.md`, `dist/robots.txt`, and `dist/.well-known/mcp.json`.
 
-**Status:** v0.0.14 — Astro 7 support and one publisher rule across the graph. Tested against Astro 5, 6, and 7 on Node 22 and 24. Builds on v0.0.11's app / product / game support: `<SoftwareApplicationSchema />` (screenshots, feature list, offers, and a `type` for `VideoGame` / `MobileApplication` / `WebApplication` + `gamePlatform`), Organization `description` + `sameAs` + `contactPoint`, `founder.url`, WebSite `inLanguage`, and custom `## sections` for `agents.md` — proven on three real sites (a person, an app, a game).
+**Status:** v0.0.15 — content signals that land where crawlers read them. Tested against Astro 5, 6, and 7 on Node 22 and 24. Builds on v0.0.11's app / product / game support: `<SoftwareApplicationSchema />` (screenshots, feature list, offers, and a `type` for `VideoGame` / `MobileApplication` / `WebApplication` + `gamePlatform`), Organization `description` + `sameAs` + `contactPoint`, `founder.url`, WebSite `inLanguage`, and custom `## sections` for `agents.md` — proven on three real sites (a person, an app, a game).
 
-## New in v0.0.14
+## New in v0.0.15
 
-- **Astro 7.** The peer range is `^5.0.0 || ^6.0.0 || ^7.0.0`, and CI runs the whole gate against 5.18.0, 6.4.8, and 7.2.9 on Node 22 and 24.
-- **One publisher rule.** `WebSiteSchema` used to publish as Person while the other components published as Organization, so a site declaring both emitted two different publishers for itself. Organization now wins the tie in all four. Single-identity sites are unaffected.
-- **`<TechArticleSchema />` works on person-first sites.** It falls back to `person` when `organization.founder` is unset, instead of crashing on the missing `organization`.
-- **`policy: 'private'` omits the sitemap** by default, rather than publishing an index of the URLs it just disallowed.
+Content signals that say what they mean, where they're read.
+
+- **The Content Signals Policy notice ships with the signals.** A
+  `Content-Signal: ai-train=no` is a string until something states what it means
+  and under what authority. The policy's own text — reproduced verbatim, [released
+  under CC0](https://blog.cloudflare.com/content-signals-policy/) — defines each
+  signal and declares that restrictions are *express reservations of rights under
+  Article 4 of the EU DSM Directive*. The toolkit defaults to `training-opt-out`,
+  so shipping the refusal without that framing was leaving the standing off the
+  claim. Set `contentSignalNotice: false` to omit it. No signals means no notice.
+- **`Content-Signal` now sits inside a `User-agent` group.** It is a group-member
+  record, like `Allow` and `Disallow`. Through v0.0.14 the toolkit emitted it above
+  the first `User-agent:` line, where — per [RFC 9309](https://www.rfc-editor.org/rfc/rfc9309.html)
+  — it belongs to no group and parsers may discard it. Both reference
+  implementations ([Cloudflare's own robots.txt](https://blog.cloudflare.com/robots.txt),
+  `stackoverflow.com`) place it in a group. **If you enabled `robotsTxt` on an
+  earlier version, re-run your build: the signal you configured may not have been
+  read.**
+- **`contentSignals` accepts `'omit'`.** Saying nothing about a signal is not the
+  same as saying `no` — an absent signal expresses no preference, while `no`
+  expresses a refusal. A site that wants to declare `search=yes` and stay silent
+  on training can now write `aiTrain: 'omit'` and get exactly that.
+- **No more malformed empty header.** Omitting every signal used to emit a bare
+  `Content-Signal: ` line — a directive with a trailing space and nothing in it.
+  The line is now dropped entirely; the rules and `Sitemap` still ship.
+
+v0.0.14 brought Astro 7 support (peer range `^5.0.0 || ^6.0.0 || ^7.0.0`, CI
+against 5.18.0 / 6.4.8 / 7.2.9 on Node 22 and 24), one publisher `@id` across the
+whole graph, `<TechArticleSchema />` on person-first sites, and a `private` policy
+that omits the sitemap. See `CHANGELOG.md` for the full history.
 
 ## What ships in v0.0.11
 
@@ -29,7 +55,7 @@
 - `dist/llms-full.txt` — manual full-context markdown from the `llmsFull` config block. This is config-driven in v0.0.7; content-collection introspection is a later layer.
 - `dist/agents.md` — Markdown discovery file for AI-agent crawlers from the `agentsMd` config block. H1 / blockquote description / optional `## Audience`, arbitrary `## sections` (title + markdown content), `## Contact`, and `## Links`. Opt-in.
 - `dist/.well-known/mcp.json` — [Model Context Protocol](https://modelcontextprotocol.io/) discovery file from the `mcp` config block. Pretty-printed JSON with `$schema` reference to the toolkit-published v1 shape (per D-22). Supports `status: 'active'` (requires `url` + `tools[]`) and `status: 'planned'` (requires `planned_tools[]`; `url` forbidden by schema). Opt-in.
-- `dist/robots.txt` — robots policy composition from the `robotsTxt` config block. Presets: `search-visible`, `training-opt-out` (default), and `private`; supports explicit bot rules, `Sitemap`, and optional `Content-Signal` directives.
+- `dist/robots.txt` — robots policy composition from the `robotsTxt` config block. Presets: `search-visible`, `training-opt-out` (default), and `private`; supports explicit bot rules, `Sitemap`, and optional [Content Signals](https://blog.cloudflare.com/content-signals-policy/) directives (each signal is `'yes'`, `'no'`, or `'omit'` to stay silent about it), emitted inside the `*` user-agent group.
 
 **`@astrojs/sitemap` detection per D-8.** When you call `aiReadiness({...})` and `@astrojs/sitemap` isn't in your integrations list, the toolkit logs a build-time warning. Sitemap is an AI-Readiness baseline; when `robotsTxt` is enabled, the generated `robots.txt` includes a `Sitemap` line by default.
 
@@ -158,7 +184,17 @@ export default defineConfig({
         // Defaults to https://your-site.com/sitemap-index.xml. Set false to omit.
         // The private policy omits it by default; an explicit URL still opts in.
         sitemap: 'https://your-site.com/sitemap-index.xml',
+        // The CC0 Content Signals Policy text ships above the signals by
+        // default — it is what makes a restriction an express reservation of
+        // rights. Set false only if you state that framing elsewhere.
+        contentSignalNotice: true,
         contentSignals: {
+          // Per the Content Signals Policy: 'yes' grants the use, 'no'
+          // refuses it, and 'omit' says nothing — which the policy defines as
+          // neither granting nor restricting. Omitting every signal drops the
+          // Content-Signal line rather than emitting an empty one. The line is
+          // written into the `*` user-agent group, where crawlers read it.
+          // https://blog.cloudflare.com/content-signals-policy/
           search: 'yes',
           aiTrain: 'no',
           aiInput: 'yes',
@@ -282,7 +318,7 @@ Build your site (`npm run build`); inspect any `dist/*.html` — you'll see inli
 ## Design principles
 
 - **Zero client JS.** Every component emits inline `<script type="application/ld+json">` at build time. Hydrating JSON-LD would erode the very Schema.org category it's meant to lift.
-- **Compose, don't clobber.** `robotsTxt` exposes explicit rules and appended lines so user intent can override presets. If you already maintain a hand-written `public/robots.txt`, compare the generated file before adopting it.
+- **Compose, don't clobber.** `robotsTxt` exposes explicit rules and appended lines so user intent can override presets. If you already maintain a hand-written `public/robots.txt`, compare the generated file before adopting it — Astro copies `public/` into the build output before the toolkit writes, and the toolkit will not overwrite a file that's already there. It logs a warning and skips, so enabling `robotsTxt` does nothing until you delete the hand-written one.
 - **Composes with `@astrojs/sitemap`.** Doesn't replace it. The integration warns when sitemap is missing and `robotsTxt` defaults its `Sitemap` line to `/sitemap-index.xml`.
 
 ## What's beyond v0.1

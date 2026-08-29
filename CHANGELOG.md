@@ -6,6 +6,61 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.0.15] — 2026-08-28
+
+Content signals that say what they mean, where they're read.
+
+### Fixed
+
+- **`Content-Signal` is emitted inside a `User-agent` group.** It is a group-member
+  record, like `Allow` and `Disallow`. Through v0.0.14 the toolkit wrote it above
+  the first `User-agent:` line, where per [RFC 9309](https://www.rfc-editor.org/rfc/rfc9309.html)
+  it belongs to no group and conforming parsers may discard it — so the signal may
+  never have been read on any site using this toolkit. Both reference
+  implementations of the policy place it in a group: Cloudflare's own robots.txt
+  puts it in the `*` group after the crawl rules, and stackoverflow.com puts it
+  immediately after `User-agent: *`. The toolkit now writes it into the `*` group.
+  Custom `rules` that name no wildcard group get a dedicated `User-agent: *` group
+  carrying only the signal — an empty group grants and denies no paths, so the
+  site-wide preference is expressed without inventing a crawl rule.
+
+  **Action required if you enabled `robotsTxt` before v0.0.15:** rebuild and
+  redeploy. Your configured signals were likely inert.
+
+### Added
+
+- **The Content Signals Policy notice, on by default.** When any signal is
+  emitted, `robots.txt` now carries the policy text verbatim above the directives:
+  the (a)/(b)/(c) rules for `yes` / `no` / absent, the definition of `search`,
+  `ai-input`, and `ai-train`, and the closing clause declaring that restrictions
+  are express reservations of rights under Article 4 of the EU DSM Directive.
+  Cloudflare released the policy under CC0, so it is reproduced without
+  restriction; the text is copied byte-for-byte from the live
+  `blog.cloudflare.com/robots.txt` rather than paraphrased.
+
+  This matters because the toolkit's default policy is `training-opt-out`. Emitting
+  `ai-train=no` without the framing that gives it legal standing shipped the
+  refusal and left the authority behind it out. Set `contentSignalNotice: false`
+  to omit the text. A site that omits every signal gets no notice either — the
+  notice interprets signals, and there is nothing to interpret.
+
+- **`'omit'` as a `contentSignals` value.** The Content Signals vocabulary has two
+  values, `yes` and `no`, but three states matter: grant, refuse, and say nothing.
+  An absent signal expresses no preference; `no` expresses a refusal. Silence was
+  previously reachable only by passing `undefined` and relying on it surviving a
+  spread over the policy defaults — an accident of the implementation, not an API,
+  and one the `'yes' | 'no'` type told consumers did not exist. `'omit'` makes it
+  explicit and typed.
+
+### Fixed
+
+- **A bare `Content-Signal: ` no longer ships.** With every signal omitted,
+  `composeContentSignal` joined an empty array and the caller pushed the result
+  unconditionally, emitting a malformed directive — header, colon, trailing space,
+  no signals. The schema accepted it and the build succeeded, so the broken line
+  reached production silently. The line is now dropped when there is nothing to
+  say; rules and `Sitemap` are unaffected.
+
 ## [0.0.14] — 2026-08-27
 
 Astro 7 support, and a JSON-LD graph that agrees with itself.
@@ -261,7 +316,9 @@ First published release. End-to-end tracer slice per `plans/05-e2e-tracer.md`.
 - TypeScript declarations for `AiReadinessConfig`, `OrganizationConfig`, `FounderConfig`.
 - Build pipeline: tsup (ESM) for `.ts` + `cp` step for `.astro` source files into `dist/components/`.
 
-[Unreleased]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.13...HEAD
+[Unreleased]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.15...HEAD
+[0.0.15]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.14...v0.0.15
+[0.0.14]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.13...v0.0.14
 [0.0.13]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.12...v0.0.13
 [0.0.12]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.11...v0.0.12
 [0.0.11]: https://github.com/adkinn/astro-ai-readiness/compare/v0.0.10...v0.0.11
