@@ -28,7 +28,7 @@
     "lint": "npm run typecheck && npm run build && node scripts/lint-package.mjs"
   },
   "dependencies": {
-    "zod": "^3.23.0"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",
